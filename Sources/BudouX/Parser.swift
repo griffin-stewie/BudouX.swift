@@ -11,11 +11,10 @@ import Foundation
 /// The default threshold value for the parser.
 let DEFAULT_THRES = 1000;
 
-
 public struct Parser {
     let model: [String: Int]
 
-    public init(model: [String : Int]) {
+    public init(model: [String : Int] = JaKNBCModel) {
         self.model = model
     }
 
