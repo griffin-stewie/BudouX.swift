@@ -28,4 +28,3 @@ final class ParserGetUnicodeBlockFeatureTests: XCTestCase {
         testFeature("", "999");
     }
 }
-
