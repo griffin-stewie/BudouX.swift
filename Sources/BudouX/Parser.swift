@@ -9,7 +9,7 @@
 import Foundation
 
 /// The default threshold value for the parser.
-let DEFAULT_THRES = 1000;
+public let DEFAULT_THRES = 1000;
 
 public struct Parser {
     let model: [String: Int]
@@ -159,7 +159,7 @@ public struct Parser {
     ///   - sentence: sentence An input sentence.
     ///   - thres: thres A threshold score to control the granularity of output chunks.
     /// - Returns: The retrieved chunks.
-    func parse(sentence: String, thres: Int = DEFAULT_THRES) -> [String] {
+    public func parse(sentence: String, thres: Int = DEFAULT_THRES) -> [String] {
         guard !sentence.isEmpty else {
             return []
         }
