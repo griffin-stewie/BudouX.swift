@@ -8,6 +8,10 @@
 
 import Foundation
 
+/// The default threshold value for the parser.
+let DEFAULT_THRES = 1000;
+
+
 public struct Parser {
     let model: [String: Int]
 
@@ -102,5 +106,109 @@ public struct Parser {
           "TQ4": p3 + b2 + b3 + b4,
         ]
         return rawFeature.map { (key, value) -> String in "\(key):\(value)" }
+    }
+
+    static func getFeature(w1: Character,
+                           w2: Character,
+                           w3: Character,
+                           w4: Character,
+                           w5: Character,
+                           w6: Character,
+                           p1: Character,
+                           p2: Character,
+                           p3: Character) -> [String] {
+        return getFeature(w1: String(w1), w2: String(w2), w3: String(w3), w4: String(w4), w5: String(w5), w6: String(w6), p1: String(p1), p2: String(p2), p3: String(p3))
+    }
+
+    /**
+     parse(sentence: string, thres: number = DEFAULT_THRES) {
+       if (sentence === '') return [];
+       let p1 = 'U';
+       let p2 = 'U';
+       let p3 = 'U';
+       const result = [sentence.slice(0, 3)];
+
+       for (let i = 3; i < sentence.length; i++) {
+         const feature = Parser.getFeature(
+           sentence[i - 3],
+           sentence[i - 2],
+           sentence[i - 1],
+           sentence[i],
+           sentence[i + 1] || '',
+           sentence[i + 2] || '',
+           p1,
+           p2,
+           p3
+         );
+         const score = feature
+           .map(f => this.model.get(f) || 0)
+           .reduce((prev, curr) => prev + curr);
+         const p = score > 0 ? 'B' : 'O';
+         if (score > thres) result.push('');
+         result[result.length - 1] += sentence[i];
+         p1 = p2;
+         p2 = p3;
+         p3 = p;
+       }
+       return result;
+     }
+     */
+
+
+    /// Parses the input sentence and returns a list of semantic chunks.
+    /// - Parameters:
+    ///   - sentence: sentence An input sentence.
+    ///   - thres: thres A threshold score to control the granularity of output chunks.
+    /// - Returns: The retrieved chunks.
+    func parse(sentence: String, thres: Int = DEFAULT_THRES) -> [String] {
+        guard !sentence.isEmpty else {
+            return []
+        }
+
+        var p1 = "U"
+        var p2 = "U"
+        var p3 = "U"
+
+        let index = sentence.index(sentence.startIndex, offsetBy: 3)
+        var result = [String(sentence.prefix(upTo: index))];
+
+        for i in 3..<sentence.count {
+            let feature = Parser.getFeature(w1: sentence.string(at: i - 3)!,
+                                            w2: sentence.string(at: i - 2)!,
+                                            w3: sentence.string(at: i - 1)!,
+                                            w4: sentence.string(at: i)!,
+                                            w5: sentence.string(at: i + 1) ?? "",
+                                            w6: sentence.string(at: i + 2) ?? "",
+                                            p1: p1,
+                                            p2: p2,
+                                            p3: p3)
+
+            let score = feature
+                .map { model[$0] ?? 0 }
+                .reduce(0, +)
+            let p = score > 0 ? "B" : "O"
+            if score > thres {
+                result.append("")
+            }
+
+            result[result.count - 1] += sentence.string(at: i)!
+            p1 = p2
+            p2 = p3
+            p3 = p
+        }
+
+        return result
+    }
+}
+
+extension String {
+    func string(at index: Int) -> String? {
+        guard index < count else {
+            return nil
+        }
+        guard let strIndex = self.index(startIndex, offsetBy: index, limitedBy: endIndex) else {
+            return nil
+        }
+        return String(self[strIndex])
     }
 }
