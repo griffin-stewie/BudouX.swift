@@ -6,26 +6,69 @@
 //  
 //
 
-import Foundation
 import BudouX
 import ArgumentParser
 
 struct MainCommand: ParsableCommand {
+
+    enum CommandError: Error, CustomStringConvertible {
+        case noInput
+
+        var description: String {
+            switch self {
+            case .noInput:
+                return "no input"
+            }
+        }
+    }
+
     static var configuration = CommandConfiguration(
         commandName: "budoux-swift",
         abstract: "budoux-swift is BudouX swift port. BudouX is the successor to Budou, the machine learning powered line break organizer tool.",
         version: "1.0.0"
     )
 
+    @Option(name: [.customLong("delim"), .customShort("d")], help: ArgumentHelp("output delimiter in TEXT mode"))
+    var delimiter = "---"
+
     @Argument(help: ArgumentHelp("text", valueName: "TXT"))
-    var input: String
+    var argument: String?
 
     func run() throws {
-        let parser = Parser()
-        let results = parser.parse(sentence: input)
-        for t in results {
-            print(t)
+        let input: String
+        if let arg = argument {
+            input = arg
+        } else {
+            guard let read = readSTDIN() else {
+                throw CommandError.noInput
+            }
+            input = read
         }
+
+        let parser = Parser()
+        let splitedTextsByNewline = input.components(separatedBy: .newlines).filter({ !$0.isEmpty })
+        for (i, text) in splitedTextsByNewline.enumerated() {
+            let results = parser.parse(sentence: text)
+            for t in results {
+                print(t)
+            }
+            if i + 1 != splitedTextsByNewline.endIndex {
+                print(delimiter)
+            }
+        }
+    }
+
+    private func readSTDIN () -> String? {
+        var inputs: [String] = []
+        while let line = readLine() {
+            inputs.append(line)
+        }
+
+        guard !inputs.isEmpty else {
+            return nil
+        }
+
+        return inputs.joined(separator: "\n")
     }
 }
 
