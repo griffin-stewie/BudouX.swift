@@ -10,6 +10,8 @@ import Foundation
 
 /// The default threshold value for the parser.
 public let DEFAULT_THRES = 1000;
+public let wordJoiner: String = "\u{2060}"
+public let zeroWidthSpace: String = "\u{200B}"
 
 public struct Parser {
     let model: [String: Int]
@@ -119,41 +121,6 @@ public struct Parser {
         return getFeature(w1: String(w1), w2: String(w2), w3: String(w3), w4: String(w4), w5: String(w5), w6: String(w6), p1: String(p1), p2: String(p2), p3: String(p3))
     }
 
-    /**
-     parse(sentence: string, thres: number = DEFAULT_THRES) {
-       if (sentence === '') return [];
-       let p1 = 'U';
-       let p2 = 'U';
-       let p3 = 'U';
-       const result = [sentence.slice(0, 3)];
-
-       for (let i = 3; i < sentence.length; i++) {
-         const feature = Parser.getFeature(
-           sentence[i - 3],
-           sentence[i - 2],
-           sentence[i - 1],
-           sentence[i],
-           sentence[i + 1] || '',
-           sentence[i + 2] || '',
-           p1,
-           p2,
-           p3
-         );
-         const score = feature
-           .map(f => this.model.get(f) || 0)
-           .reduce((prev, curr) => prev + curr);
-         const p = score > 0 ? 'B' : 'O';
-         if (score > thres) result.push('');
-         result[result.length - 1] += sentence[i];
-         p1 = p2;
-         p2 = p3;
-         p3 = p;
-       }
-       return result;
-     }
-     */
-
-
     /// Parses the input sentence and returns a list of semantic chunks.
     /// - Parameters:
     ///   - sentence: sentence An input sentence.
@@ -197,6 +164,24 @@ public struct Parser {
         }
 
         return result
+    }
+}
+
+public extension Parser {
+
+    /// Translates the given `String` to another `String` with word joiners and zero width spaces for semantic line breaks.
+    /// - Parameters:
+    ///   - sentence: An input sentence.
+    ///   - thres: A threshold score to control the granularity of output chunks.
+    /// - Returns: The translated `String`.
+    func translate(sentence: String, thres: Int = DEFAULT_THRES) -> String {
+        let chunks = parse(sentence: sentence, thres: thres)
+        return chunks.map { text in
+            text.reduce(into: String(), { partialResult, char in
+                partialResult += String(char) + wordJoiner
+            })
+        }
+        .joined(separator: zeroWidthSpace)
     }
 }
 
