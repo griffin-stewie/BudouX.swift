@@ -28,6 +28,9 @@ struct MainCommand: ParsableCommand {
         version: "1.0.0"
     )
 
+    @Flag(name: [.customLong("swift-string"), .customShort("s")], help: ArgumentHelp("Swift String mode"))
+    var swiftStringMode: Bool = false
+
     @Option(name: [.customLong("delim"), .customShort("d")], help: ArgumentHelp("output delimiter in TEXT mode"))
     var delimiter = "---"
 
@@ -47,13 +50,20 @@ struct MainCommand: ParsableCommand {
 
         let parser = Parser()
         let splitedTextsByNewline = input.components(separatedBy: .newlines).filter({ !$0.isEmpty })
-        for (i, text) in splitedTextsByNewline.enumerated() {
-            let results = parser.parse(sentence: text)
-            for t in results {
-                print(t)
+
+        if swiftStringMode {
+            for text in splitedTextsByNewline {
+                print(parser.translate(sentence: text))
             }
-            if i + 1 != splitedTextsByNewline.endIndex {
-                print(delimiter)
+        } else {
+            for (i, text) in splitedTextsByNewline.enumerated() {
+                let results = parser.parse(sentence: text)
+                for t in results {
+                    print(t)
+                }
+                if i + 1 != splitedTextsByNewline.endIndex {
+                    print(delimiter)
+                }
             }
         }
     }
