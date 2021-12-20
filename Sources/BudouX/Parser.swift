@@ -167,23 +167,34 @@ public struct Parser {
     }
 }
 
-public extension Parser {
+// MARK: - Translates to `String`
+
+extension Parser {
 
     /// Translates the given `String` to another `String` with word joiners and zero width spaces for semantic line breaks.
     /// - Parameters:
     ///   - sentence: An input sentence.
     ///   - thres: A threshold score to control the granularity of output chunks.
     /// - Returns: The translated `String`.
-    func translate(sentence: String, thres: Int = DEFAULT_THRES) -> String {
+    public func translate(sentence: String, thres: Int = DEFAULT_THRES) -> String {
         let chunks = parse(sentence: sentence, thres: thres)
-        return chunks.map { text in
-            text.reduce(into: String(), { partialResult, char in
-                partialResult += String(char) + wordJoiner
-            })
-        }
-        .joined(separator: zeroWidthSpace)
+        return insertSpaces(chunks)
+    }
+
+    func insertSpaces(_ chunks: [String]) -> String {
+        return chunks
+            .map { insertWordJoinerBetweenEachCharacter($0) }
+            .joined(separator: zeroWidthSpace)
+    }
+
+    func insertWordJoinerBetweenEachCharacter(_ text: String) -> String {
+        text
+            .map { String($0) }
+            .joined(separator: wordJoiner)
     }
 }
+
+// MARK: - Internal
 
 extension String {
     func string(at index: Int) -> String? {
