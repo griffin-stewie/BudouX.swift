@@ -18,18 +18,11 @@ struct ContentView: View {
             VStack(alignment: .leading, spacing: 5) {
                 Text("With BudouX")
                     .font(.headline)
-                Text(sample.budouxed)
+                Text(sample.budouxed())
                     .foregroundColor(.primary)
                     .border(.gray.opacity(0.5), width: 1)
             }
         }
         .frame(width: 160, alignment: .center)
-    }
-}
-
-extension String {
-    var budouxed: String {
-        let parser = Parser()
-        return parser.translate(sentence: self)
     }
 }
