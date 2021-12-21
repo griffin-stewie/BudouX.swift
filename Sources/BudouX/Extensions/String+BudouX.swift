@@ -21,6 +21,6 @@ public extension String {
     /// Remove \u{2060} Word Joiner and \u{200B} Zero Width Space
     /// - Returns: String special characters are removed
     func washout() -> String {
-        replacingOccurrences(of: wordJoiner, with: "").replacingOccurrences(of: zeroWidthSpace, with: "")
+        replacingOccurrences(of: BudouX.wordJoiner, with: "").replacingOccurrences(of: BudouX.zeroWidthSpace, with: "")
     }
 }
