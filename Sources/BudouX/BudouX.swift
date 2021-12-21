@@ -1,6 +1,11 @@
-public struct BudouX_swift {
-    public private(set) var text = "Hello, World!"
+//
+//  BudouX.swift
+//
+//
+//  Created by griffin-stewie on 2021/12/21.
+//
+//
 
-    public init() {
-    }
+public struct BudouX {
+    public struct Model { }
 }
