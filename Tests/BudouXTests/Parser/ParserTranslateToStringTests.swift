@@ -6,7 +6,7 @@ final class ParserTranslateToStringTests: XCTestCase {
         let sample = "あなたに"
         let parser = Parser()
         let result = parser.insertWordJoinerBetweenEachCharacter(sample)
-        let wordJoiner = BudouX.wordJoiner
+        let wordJoiner = Parser.wordJoiner
         XCTAssertEqual(result, "あ\(wordJoiner)な\(wordJoiner)た\(wordJoiner)に")
     }
 
@@ -14,8 +14,8 @@ final class ParserTranslateToStringTests: XCTestCase {
         let sample = ["あなたに", "寄り添う", "最先端の", "テクノロジー。"]
         let parser = Parser()
         let result = parser.insertSpaces(sample)
-        let wordJoiner = BudouX.wordJoiner
-        let zeroWidthSpace = BudouX.zeroWidthSpace
+        let wordJoiner = Parser.wordJoiner
+        let zeroWidthSpace = Parser.zeroWidthSpace
         let expected = "あ\(wordJoiner)な\(wordJoiner)た\(wordJoiner)に\(zeroWidthSpace)寄\(wordJoiner)り\(wordJoiner)添\(wordJoiner)う\(zeroWidthSpace)最\(wordJoiner)先\(wordJoiner)端\(wordJoiner)の\(zeroWidthSpace)テ\(wordJoiner)ク\(wordJoiner)ノ\(wordJoiner)ロ\(wordJoiner)ジ\(wordJoiner)ー\(wordJoiner)。"
         XCTAssertEqual(result, expected)
     }

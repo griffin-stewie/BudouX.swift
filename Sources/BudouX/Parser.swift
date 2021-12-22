@@ -8,7 +8,7 @@
 
 import Foundation
 
-extension BudouX {
+extension Parser {
     /// The default threshold value for the parser.
     public static let defaultThres = 1000;
 
@@ -20,7 +20,7 @@ extension BudouX {
 public struct Parser {
     let model: [String: Int]
 
-    public init(model: [String : Int] = BudouX.Model.jaKNBCModel) {
+    public init(model: [String : Int] = Model.jaKNBCModel) {
         self.model = model
     }
 
@@ -33,7 +33,7 @@ public struct Parser {
             bn = 999
         } else {
             let cp = w.utf16[w.utf16.startIndex]
-            bn = bisectRight(arr: BudouX.unicodeBlocks, i: Int(cp))
+            bn = bisectRight(arr: Model.unicodeBlocks, i: Int(cp))
         }
 
         return String(format: "%03d", bn)
@@ -130,7 +130,7 @@ public struct Parser {
     ///   - sentence: sentence An input sentence.
     ///   - thres: thres A threshold score to control the granularity of output chunks.
     /// - Returns: The retrieved chunks.
-    public func parse(sentence: String, thres: Int = BudouX.defaultThres) -> [String] {
+    public func parse(sentence: String, thres: Int = Parser.defaultThres) -> [String] {
         guard !sentence.isEmpty else {
             return []
         }
@@ -180,7 +180,7 @@ extension Parser {
     ///   - sentence: An input sentence.
     ///   - thres: A threshold score to control the granularity of output chunks.
     /// - Returns: The translated `String`.
-    public func translate(sentence: String, thres: Int = BudouX.defaultThres) -> String {
+    public func translate(sentence: String, thres: Int = Parser.defaultThres) -> String {
         let chunks = parse(sentence: sentence, thres: thres)
         return insertSpaces(chunks)
     }
@@ -188,13 +188,13 @@ extension Parser {
     func insertSpaces(_ chunks: [String]) -> String {
         return chunks
             .map { insertWordJoinerBetweenEachCharacter($0) }
-            .joined(separator: BudouX.zeroWidthSpace)
+            .joined(separator: Parser.zeroWidthSpace)
     }
 
     func insertWordJoinerBetweenEachCharacter(_ text: String) -> String {
         text
             .map { String($0) }
-            .joined(separator: BudouX.wordJoiner)
+            .joined(separator: Parser.wordJoiner)
     }
 }
 

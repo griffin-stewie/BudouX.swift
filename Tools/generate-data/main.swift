@@ -47,7 +47,7 @@ struct GenerateData: ParsableCommand {
 
     func generateUnicodeBlocksCode(data: Data) -> String {
         """
-        extension BudouX {
+        extension Model {
             static let unicodeBlocks = \(String(data: data, encoding: .utf8)!)
         }
         """
@@ -59,7 +59,7 @@ struct GenerateData: ParsableCommand {
             .replacingOccurrences(of: "}", with: "]")
             .escapingUnicode()
         return """
-        extension BudouX.Model {
+        extension Model {
             public static let jaKNBCModel: [String: Int] = \(jsonStr)
         }
         """
