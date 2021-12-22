@@ -24,6 +24,12 @@ let package = Package(
                 .product(name: "ArgumentParser", package: "swift-argument-parser")
             ]
         ),
+        .executableTarget(
+            name: "generate-data",
+            dependencies: [
+                .product(name: "ArgumentParser", package: "swift-argument-parser")
+            ],
+            path: "Tools/generate-data"),
         .testTarget(
             name: "BudouXTests",
             dependencies: ["BudouX"]),
