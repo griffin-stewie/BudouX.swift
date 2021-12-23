@@ -34,6 +34,3 @@ func bisectRight(arr:[Int], i: Int) -> Int {
         return mid + bisectRight(arr: Array(arr.suffix(from: mid)), i: i)
     }
 }
-
-/** The separator string to specify breakpoints. */
-let SEP = "_"
