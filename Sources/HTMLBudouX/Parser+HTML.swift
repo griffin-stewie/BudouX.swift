@@ -12,54 +12,78 @@ import SwiftSoup
 
 // MARK: - Translates to `HTML`
 
+public extension BudouX.Parser {
+    func translateHTMLString(html: String, threshold: Int = Parser.defaultThres) -> String {
+        guard !html.isEmpty else {
+            return html
+        }
+
+        guard let doc = try? SwiftSoup.parse(html) else {
+            return html
+        }
+
+        if let body = doc.body(), Parser.hasChildTextNode(body) {
+            let wrapper = try! doc.createElement("span")
+            let children = doc.body()!.getChildNodes()
+            for c in children {
+                try! wrapper.appendChild(c)
+            }
+            try! doc.body()!.appendChild(wrapper)
+        }
+        applyElement(parentElement: doc.body()!.childNode(0) as! Element, threshold: threshold)
+        return try! doc.body()!.html()
+    }
+}
+
 extension BudouX.Parser {
     func applyElement(parentElement: Element, threshold: Int = Parser.defaultThres) {
-        try! parentElement.attr("style", "word-break: keep-all; overflow-wrap: break-word;")
-        let chunks = self.parse(sentence: try! parentElement.text(), thres: threshold)
-        print(chunks)
-        var charsToProcess = chunks.joined(separator: SEP)
-        print(charsToProcess)
+        try! parentElement.addAttr("style", "word-break: keep-all")
+        try! parentElement.addAttr("style", "overflow-wrap: break-word")
 
+        let chunks = self.parse(sentence: parentElement.textContent(), thres: threshold)
+        var charsToProcess = chunks.joined(separator: SEP)
         let ownerDocument = parentElement.ownerDocument()!
 
         func processChildren(parent: Element) {
+
             let toSkip = skipNodes.contains(parent.nodeName().uppercased())
+
+            func process(child: Node, content: String) {
+                var textNodeContent = ""
+                var nodesToAdd: [Node] = []
+
+                content.forEach { char in
+                    if toSkip {
+                        textNodeContent += String(char)
+                        charsToProcess = String(charsToProcess.dropFirst( String(charsToProcess.first!) == SEP ? 2 : 1 ))
+                    } else if char == charsToProcess.first! {
+                        textNodeContent += String(char)
+                        charsToProcess = String(charsToProcess.dropFirst(1))
+                    } else if String(charsToProcess.first!) == SEP {
+                        nodesToAdd.append(TextNode(textNodeContent, ownerDocument.getBaseUri()))
+                        nodesToAdd.append(try! ownerDocument.createElement("wbr"))
+                        charsToProcess = String(charsToProcess.dropFirst(2))
+                        textNodeContent = String(char)
+                    }
+                }
+
+                if !textNodeContent.isEmpty {
+                    nodesToAdd.append(TextNode(textNodeContent, ownerDocument.getBaseUri()))
+                }
+
+                child.replaceWith(nodes: nodesToAdd)
+            }
+
             for child in parent.getChildNodes() {
                 switch child {
+                case let dataNode as DataNode:
+                    process(child: child, content: dataNode.getWholeData())
                 case let textNode as TextNode:
-                    print(textNode)
-
-                    var textNodeContent = ""
-                    var nodesToAdd: [Node] = []
-
-                    textNode.text().forEach { char in
-                        if toSkip {
-                            textNodeContent += String(char)
-                            charsToProcess = String(charsToProcess.dropFirst( String(charsToProcess.first!) == SEP ? 2 : 1 ))
-                        } else if char == charsToProcess.first! {
-                            textNodeContent += String(char)
-                            charsToProcess = String(charsToProcess.dropFirst(1))
-                        } else if String(charsToProcess.first!) == SEP {
-                            nodesToAdd.append(TextNode(textNodeContent, ownerDocument.getBaseUri()))
-                            nodesToAdd.append(try! ownerDocument.createElement("wbr"))
-                            charsToProcess = String(charsToProcess.dropFirst(2))
-                            textNodeContent = String(char)
-                        }
-                    }
-
-                    if !textNodeContent.isEmpty {
-                        nodesToAdd.append(TextNode(textNodeContent, ownerDocument.getBaseUri()))
-                    }
-
-                    if let parent = child.parent() {
-                        try! child.replaceWith(nodesToAdd.removeFirst())
-                        try! parent.addChildren(nodesToAdd)
-                    }
-
+                    process(child: child, content: textNode.textContent())
                 case let element as Element:
                     processChildren(parent: element);
                 default:
-                    fatalError()
+                    break
                 }
             }
         }
