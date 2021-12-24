@@ -27,7 +27,7 @@ final class ParserParseTests: XCTestCase {
     func testShouldIgnoreFeaturesWithScoresLowerThanTheThreshold() throws {
         let model = ["UW4:a": 10]
         let parser = Parser(model: model)
-        let result = parser.parse(sentence: TEST_SENTENCE, thres: 100)
+        let result = parser.parse(sentence: TEST_SENTENCE, threshold: 100)
         XCTAssertEqual(result, [TEST_SENTENCE])
 
     }
