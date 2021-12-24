@@ -48,6 +48,10 @@ print(sample.budouxed())
 // あ⁠な⁠た⁠に​寄⁠り⁠添⁠う​最⁠先⁠端⁠の​テ⁠ク⁠ノ⁠ロ⁠ジ⁠ー⁠。
 ```
 
+If you need a function which translate an HTML string by wrapping phrases with non-breaking markup. Here's a support package for it.
+
+[griffin-stewie/HTMLBudouX.swift](https://github.com/griffin-stewie/HTMLBudouX.swift)
+
 ## Install
 
 Support Swift Package Manager only. There are no plans to support other package management tools at this time.
