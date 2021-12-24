@@ -10,7 +10,7 @@ import Foundation
 
 extension Parser {
     /// The default threshold value for the parser.
-    public static let defaultThres = 1000;
+    public static let defaultThreshold = 1000;
 
     public static let wordJoiner: String = "\u{2060}"
     public static let zeroWidthSpace: String = "\u{200B}"
@@ -128,9 +128,9 @@ public struct Parser {
     /// Parses the input sentence and returns a list of semantic chunks.
     /// - Parameters:
     ///   - sentence: sentence An input sentence.
-    ///   - thres: thres A threshold score to control the granularity of output chunks.
+    ///   - threshold: A threshold score to control the granularity of output chunks.
     /// - Returns: The retrieved chunks.
-    public func parse(sentence: String, thres: Int = Parser.defaultThres) -> [String] {
+    public func parse(sentence: String, threshold: Int = Parser.defaultThreshold) -> [String] {
         guard !sentence.isEmpty else {
             return []
         }
@@ -157,7 +157,7 @@ public struct Parser {
                 .map { model[$0] ?? 0 }
                 .reduce(0, +)
             let p = score > 0 ? "B" : "O"
-            if score > thres {
+            if score > threshold {
                 result.append("")
             }
 
@@ -178,10 +178,10 @@ extension Parser {
     /// Translates the given `String` to another `String` with word joiners and zero width spaces for semantic line breaks.
     /// - Parameters:
     ///   - sentence: An input sentence.
-    ///   - thres: A threshold score to control the granularity of output chunks.
+    ///   - threshold: A threshold score to control the granularity of output chunks.
     /// - Returns: The translated `String`.
-    public func translate(sentence: String, thres: Int = Parser.defaultThres) -> String {
-        let chunks = parse(sentence: sentence, thres: thres)
+    public func translate(sentence: String, threshold: Int = Parser.defaultThreshold) -> String {
+        let chunks = parse(sentence: sentence, threshold: threshold)
         return insertSpaces(chunks)
     }
 
