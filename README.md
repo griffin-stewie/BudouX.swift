@@ -70,7 +70,7 @@ package.targets.append(
 
 ## Update Data from BudouX
 
-For this package maintainer, run following command to update `Sources/BudouX/Data/JaKNBCModel.swift` and `Sources/BudouX/Data/UnicodeBlocks.swift` from [original BudouXBudouX](https://github.com/google/budoux).
+For this package maintainer, run following command to update `Sources/BudouX/Data/JaKNBCModel.swift` and `Sources/BudouX/Data/UnicodeBlocks.swift` from [original BudouX](https://github.com/google/budoux).
 
 ```sh
 make update_data 
