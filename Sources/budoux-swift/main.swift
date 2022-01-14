@@ -34,6 +34,9 @@ struct MainCommand: ParsableCommand {
     @Option(name: [.customLong("delim"), .customShort("d")], help: ArgumentHelp("output delimiter in TEXT mode"))
     var delimiter = "---"
 
+    @Option(name: [.customLong("thres"), .customShort("t")], help: ArgumentHelp("threshold value to separate chunk"))
+    var threshold: Int = Parser.defaultThreshold
+
     @Argument(help: ArgumentHelp("text", valueName: "TXT"))
     var argument: String?
 
@@ -53,11 +56,11 @@ struct MainCommand: ParsableCommand {
 
         if swiftStringMode {
             for text in splitedTextsByNewline {
-                print(parser.translate(sentence: text))
+                print(parser.translate(sentence: text, threshold: threshold))
             }
         } else {
             for (i, text) in splitedTextsByNewline.enumerated() {
-                let results = parser.parse(sentence: text)
+                let results = parser.parse(sentence: text, threshold: threshold)
                 for t in results {
                     print(t)
                 }
