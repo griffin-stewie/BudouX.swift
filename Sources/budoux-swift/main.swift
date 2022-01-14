@@ -39,7 +39,7 @@ struct MainCommand: ParsableCommand {
     @Option(name: [.customLong("thres"), .customShort("t")], help: ArgumentHelp("threshold value to separate chunk"))
     var threshold: Int = Parser.defaultThreshold
 
-    @Option(name: [.customLong("model"), .customShort("m")], help: ArgumentHelp("custom model file path"))
+    @Option(name: [.customLong("model"), .customShort("m")], help: ArgumentHelp("custom model file path (default: built-in ja-knbc.json)"))
     var customModelJSONPath: Path?
 
     @Argument(help: ArgumentHelp("text", valueName: "TXT"))
