@@ -12,7 +12,6 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-argument-parser", .upToNextMinor(from: "1.0.2")),
-        .package(url: "https://github.com/mxcl/Path.swift.git", .upToNextMinor(from: "1.4.0")),
     ],
     targets: [
         .target(
@@ -22,14 +21,13 @@ let package = Package(
             name: "budoux-swift",
             dependencies: [
                 "BudouX",
-                .product(name: "ArgumentParser", package: "swift-argument-parser"),
-                .product(name: "Path", package: "Path.swift"),
+                .product(name: "ArgumentParser", package: "swift-argument-parser")
             ]
         ),
         .executableTarget(
             name: "generate-data",
             dependencies: [
-                .product(name: "ArgumentParser", package: "swift-argument-parser"),
+                .product(name: "ArgumentParser", package: "swift-argument-parser")
             ],
             path: "Tools/generate-data"),
         .testTarget(

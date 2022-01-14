@@ -8,8 +8,6 @@
 
 import BudouX
 import ArgumentParser
-import Path
-import Foundation
 
 struct MainCommand: ParsableCommand {
 
@@ -39,9 +37,6 @@ struct MainCommand: ParsableCommand {
     @Option(name: [.customLong("thres"), .customShort("t")], help: ArgumentHelp("threshold value to separate chunk"))
     var threshold: Int = Parser.defaultThreshold
 
-    @Option(name: [.customLong("model"), .customShort("m")], help: ArgumentHelp("custom model file path"))
-    var customModelJSONPath: Path?
-
     @Argument(help: ArgumentHelp("text", valueName: "TXT"))
     var argument: String?
 
@@ -56,8 +51,7 @@ struct MainCommand: ParsableCommand {
             input = read
         }
 
-        let model = try loadCustomModelJSON(from: customModelJSONPath) ?? Model.jaKNBCModel
-        let parser = Parser(model: model)
+        let parser = Parser()
         let splitedTextsByNewline = input.components(separatedBy: .newlines).filter({ !$0.isEmpty })
 
         if swiftStringMode {
@@ -88,35 +82,6 @@ struct MainCommand: ParsableCommand {
         }
 
         return inputs.joined(separator: "\n")
-    }
-
-    private func loadCustomModelJSON(from path: Path?) throws -> [String: Int]? {
-        guard let path = path else {
-            return nil
-        }
-
-        guard let model = try JSONSerialization.jsonObject(with: try Data(contentsOf: path), options: []) as? [String: Int] else {
-            return nil
-        }
-
-        return model
-    }
-}
-
-extension Path: ExpressibleByArgument {
-
-    /// Initializer to confirm `ExpressibleByArgument`
-    public init?(argument: String) {
-        self = Path(argument) ?? Path.cwd / argument
-    }
-
-    /// `defaultValueDescription` to confirm `ExpressibleByArgument`
-    public var defaultValueDescription: String {
-        if self == Path.cwd / "." {
-            return "current directory"
-        }
-
-        return String(describing: self)
     }
 }
 
