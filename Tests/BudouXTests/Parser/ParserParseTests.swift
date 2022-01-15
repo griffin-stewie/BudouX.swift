@@ -4,14 +4,14 @@ import XCTest
 
 final class ParserParseTests: XCTestCase {
 
-    let TEST_SENTENCE = "abcdeabcd"
+    let testSentence = "abcdeabcd"
 
     func testShouldSeparateButNotTheFirstTwoCharacters() throws {
         let model = [
             "UW4:a": 10000  // means "should separate right before 'a'".
         ]
         let parser = Parser(model: model)
-        let result = parser.parse(sentence: TEST_SENTENCE)
+        let result = parser.parse(sentence: testSentence)
         XCTAssertEqual(result, ["abcde", "abcd"])
     }
 
@@ -20,7 +20,7 @@ final class ParserParseTests: XCTestCase {
             "BP2:UU": 10000  // previous results are Unknown and Unknown.
         ]
         let parser = Parser(model: model)
-        let result = parser.parse(sentence: TEST_SENTENCE)
+        let result = parser.parse(sentence: testSentence)
         XCTAssertEqual(result, ["abc", "deabcd"])
 
     }
@@ -28,8 +28,8 @@ final class ParserParseTests: XCTestCase {
     func testShouldIgnoreFeaturesWithScoresLowerThanTheThreshold() throws {
         let model = ["UW4:a": 10]
         let parser = Parser(model: model)
-        let result = parser.parse(sentence: TEST_SENTENCE, threshold: 100)
-        XCTAssertEqual(result, [TEST_SENTENCE])
+        let result = parser.parse(sentence: testSentence, threshold: 100)
+        XCTAssertEqual(result, [testSentence])
 
     }
 
