@@ -8,10 +8,18 @@ else
 BINARIES_FOLDER=/usr/local/bin
 endif
 
-.PHONY: update_data format lint check-env build_cli install clean
+.PHONY: format lint check-env clean
 
-update_data:
-	swift build --product generate-data && $(GENERATE-DATA-EXECUTABLE)
+generate_data: clean
+		swift build --product generate-data && $(GENERATE-DATA-EXECUTABLE)
+
+update_model: generate_data format
+
+format:
+	swift-format format --parallel --in-place --ignore-unparsable-files --recursive ./Sources ./Tests ./Tools
+
+lint:
+	swift-format lint --parallel --recursive ./Sources --recursive ./Tests
 
 check-env:
 	if test "$(SIGNING_IDENTIFIER)" = "" ; then \
