@@ -35,4 +35,4 @@ func bisectRight(arr: [Int], i: Int) -> Int {
 }
 
 /// The separator string to specify breakpoints.
-let SEP = "_"
+let separator = "_"
