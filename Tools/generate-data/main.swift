@@ -47,6 +47,7 @@ struct GenerateData: ParsableCommand {
 
     func generateUnicodeBlocksCode(data: Data) -> String {
         """
+        // swift-format-ignore-file
         extension Model {
             static let unicodeBlocks = \(String(data: data, encoding: .utf8)!)
         }
@@ -59,10 +60,12 @@ struct GenerateData: ParsableCommand {
             .replacingOccurrences(of: "}", with: "]")
             .escapingUnicode()
         return """
-        extension Model {
-            public static let jaKNBCModel: [String: Int] = \(jsonStr)
-        }
-        """
+            // swift-format-ignore-file
+            extension Model {
+                /// Default jaKNBC Model.
+                public static let jaKNBCModel: [String: Int] = \(jsonStr)
+            }
+            """
     }
 
     mutating func run() throws {
