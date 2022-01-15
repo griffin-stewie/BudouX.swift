@@ -6,3 +6,4 @@ xcuserdata/
 DerivedData/
 .swiftpm
 /.vscode
+/release_binary.zip
