@@ -6,4 +6,4 @@
 //
 //
 
-public struct Model { }
+public struct Model {}

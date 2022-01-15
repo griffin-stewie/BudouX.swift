@@ -1,17 +1,19 @@
 import XCTest
+
 @testable import BudouX
 
 final class ParserGetFeatureTests: XCTestCase {
 
-    let feature: [String] = Parser.getFeature(w1: "a",
-                                              w2: "b",
-                                              w3: "c",
-                                              w4: "d",
-                                              w5: "e",
-                                              w6: "f",
-                                              p1: "x",
-                                              p2: "y",
-                                              p3: "z")
+    let feature: [String] = Parser.getFeature(
+        w1: "a",
+        w2: "b",
+        w3: "c",
+        w4: "d",
+        w5: "e",
+        w6: "f",
+        p1: "x",
+        p2: "y",
+        p3: "z")
 
     func testShouldIncludeCertainFeatures() throws {
         XCTAssertTrue(feature.contains("UW1:a"))

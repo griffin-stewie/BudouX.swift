@@ -1,13 +1,12 @@
 //
 //  Utils.swift
-//  
+//
 //
 //  Created by griffin-stewie on 2021/12/16.
-//  
+//
 //
 
 import Foundation
-
 
 /// the same as Python's bisect.bisect_right method
 ///
@@ -18,8 +17,8 @@ import Foundation
 ///   - arr: The sorted array.
 ///   - i: The item to check the insertion point.
 /// - Returns: The insertion point.
-func bisectRight(arr:[Int], i: Int) -> Int {
-    let mid = Int(floor(Double(arr.count/2)))
+func bisectRight(arr: [Int], i: Int) -> Int {
+    let mid = Int(floor(Double(arr.count / 2)))
     if i == arr[mid] {
         return mid + 1
     } else if i < arr[mid] {
@@ -35,5 +34,5 @@ func bisectRight(arr:[Int], i: Int) -> Int {
     }
 }
 
-/** The separator string to specify breakpoints. */
+/// The separator string to specify breakpoints.
 let SEP = "_"

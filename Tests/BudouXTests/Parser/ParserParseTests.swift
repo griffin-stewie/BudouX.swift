@@ -1,4 +1,5 @@
 import XCTest
+
 @testable import BudouX
 
 final class ParserParseTests: XCTestCase {
@@ -7,7 +8,7 @@ final class ParserParseTests: XCTestCase {
 
     func testShouldSeparateButNotTheFirstTwoCharacters() throws {
         let model = [
-            "UW4:a": 10000 // means "should separate right before 'a'".
+            "UW4:a": 10000  // means "should separate right before 'a'".
         ]
         let parser = Parser(model: model)
         let result = parser.parse(sentence: TEST_SENTENCE)
@@ -16,7 +17,7 @@ final class ParserParseTests: XCTestCase {
 
     func testShouldRespectTheResultsFeatureWithAHighScore() throws {
         let model = [
-            "BP2:UU": 10000 // previous results are Unknown and Unknown.
+            "BP2:UU": 10000  // previous results are Unknown and Unknown.
         ]
         let parser = Parser(model: model)
         let result = parser.parse(sentence: TEST_SENTENCE)
@@ -67,7 +68,7 @@ final class ParserParseTests: XCTestCase {
             "郊外の",
             "ぎらぎらひかる",
             "草の",
-            "波。"
+            "波。",
         ]
         XCTAssertEqual(result, expected)
     }

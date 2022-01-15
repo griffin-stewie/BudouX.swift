@@ -1,13 +1,13 @@
 //
 //  main.swift
-//  
+//
 //
 //  Created by griffin-stewie on 2021/12/21.
-//  
+//
 //
 
-import Foundation
 import ArgumentParser
+import Foundation
 
 // MARK: Helpers
 
@@ -19,10 +19,11 @@ extension Foundation.URL: ExpressibleByArgument {
 
 extension String {
     func escapingUnicode() -> String {
-        replacingOccurrences(of: #"\\u(\S{4})"#,
-                             with: #"\\u{$1}"#,
-                             options: .regularExpression,
-                             range: range(of: self))
+        replacingOccurrences(
+            of: #"\\u(\S{4})"#,
+            with: #"\\u{$1}"#,
+            options: .regularExpression,
+            range: range(of: self))
     }
 }
 

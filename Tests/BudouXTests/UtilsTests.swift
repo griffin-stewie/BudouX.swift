@@ -1,4 +1,5 @@
 import XCTest
+
 @testable import BudouX
 
 final class UtilsTests: XCTestCase {
@@ -22,9 +23,9 @@ final class UtilsTests: XCTestCase {
     }
 }
 
-private extension UtilsTests {
-    func testInsertionPoint(item: Int, expectedPoint: Int) {
-        let point = bisectRight(arr: arr, i: item);
+extension UtilsTests {
+    fileprivate func testInsertionPoint(item: Int, expectedPoint: Int) {
+        let point = bisectRight(arr: arr, i: item)
         XCTAssertEqual(point, expectedPoint)
     }
 }
