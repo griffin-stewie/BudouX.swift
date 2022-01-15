@@ -1,4 +1,5 @@
 import XCTest
+
 @testable import BudouX
 
 final class ParserGetUnicodeBlockFeatureTests: XCTestCase {
@@ -21,10 +22,10 @@ final class ParserGetUnicodeBlockFeatureTests: XCTestCase {
     }
 
     func testShouldReturnIn3DigitsEvenIfTheIndexIsSmall() throws {
-        testFeature("a", "001");
+        testFeature("a", "001")
     }
 
     func testShouldReturnTheDefaultValueIfTheCodePointIsUndefined() throws {
-        testFeature("", "999");
+        testFeature("", "999")
     }
 }

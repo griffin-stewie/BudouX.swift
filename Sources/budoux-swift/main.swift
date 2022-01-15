@@ -1,15 +1,15 @@
 //
 //  main.swift
-//  
+//
 //
 //  Created by griffin-stewie on 2021/12/17.
-//  
+//
 //
 
-import BudouX
 import ArgumentParser
-import Path
+import BudouX
 import Foundation
+import Path
 
 struct MainCommand: ParsableCommand {
 
@@ -77,7 +77,7 @@ struct MainCommand: ParsableCommand {
         }
     }
 
-    private func readSTDIN () -> String? {
+    private func readSTDIN() -> String? {
         var inputs: [String] = []
         while let line = readLine() {
             inputs.append(line)

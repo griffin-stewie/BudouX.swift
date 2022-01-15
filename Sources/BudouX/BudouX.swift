@@ -6,4 +6,5 @@
 //
 //
 
-public struct Model { }
+/// ML Model acts as namespace. See JaKNBCModel.swift.
+public struct Model {}

@@ -1,13 +1,13 @@
 //
 //  main.swift
-//  
+//
 //
 //  Created by griffin-stewie on 2021/12/21.
-//  
+//
 //
 
-import Foundation
 import ArgumentParser
+import Foundation
 
 // MARK: Helpers
 
@@ -19,10 +19,11 @@ extension Foundation.URL: ExpressibleByArgument {
 
 extension String {
     func escapingUnicode() -> String {
-        replacingOccurrences(of: #"\\u(\S{4})"#,
-                             with: #"\\u{$1}"#,
-                             options: .regularExpression,
-                             range: range(of: self))
+        replacingOccurrences(
+            of: #"\\u(\S{4})"#,
+            with: #"\\u{$1}"#,
+            options: .regularExpression,
+            range: range(of: self))
     }
 }
 
@@ -47,6 +48,7 @@ struct GenerateData: ParsableCommand {
 
     func generateUnicodeBlocksCode(data: Data) -> String {
         """
+        // swift-format-ignore-file
         extension Model {
             static let unicodeBlocks = \(String(data: data, encoding: .utf8)!)
         }
@@ -59,10 +61,12 @@ struct GenerateData: ParsableCommand {
             .replacingOccurrences(of: "}", with: "]")
             .escapingUnicode()
         return """
-        extension Model {
-            public static let jaKNBCModel: [String: Int] = \(jsonStr)
-        }
-        """
+            // swift-format-ignore-file
+            extension Model {
+                /// Default jaKNBC Model.
+                public static let jaKNBCModel: [String: Int] = \(jsonStr)
+            }
+            """
     }
 
     mutating func run() throws {
