@@ -12,14 +12,20 @@ extension Parser {
     /// The default threshold value for the parser.
     public static let defaultThreshold = 1000
 
+    /// A character to connect characters so that they are not easily broken into new lines.
     public static let wordJoiner: String = "\u{2060}"
+
+    /// A character to represent a space between characters that may be broken.
     public static let zeroWidthSpace: String = "\u{200B}"
 }
 
-
+/// The main parser object with a variety of class methods to provide semantic
+/// chunks and markups from the given input string.
 public struct Parser {
     let model: [String: Int]
 
+    /// Initializer.
+    /// - Parameter model: A model mapping a feature (str) and its score (int). Default is built-in jaKNBCModel.
     public init(model: [String: Int] = Model.jaKNBCModel) {
         self.model = model
     }
