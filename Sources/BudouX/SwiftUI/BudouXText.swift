@@ -17,7 +17,10 @@
     /// - Returns: The `SwiftUI.Text` initialized from the result of translating by the BudouX parser.
     @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
     public func BudouXText(verbatim content: String, parser: Parser = .init(), threshold: Int = Parser.defaultThreshold) -> Text {
-        Text(verbatim: parser.translate(sentence: content, threshold: threshold))
+        guard supportedNaturalLanguages.contains(currentLocalizationKey) else {
+            return Text(verbatim: content)
+        }
+        return Text(verbatim: parser.translate(sentence: content, threshold: threshold))
     }
 
     // swift-format-ignore: AlwaysUseLowerCamelCase
@@ -35,7 +38,10 @@
     ///   - threshold: A threshold score for BudouX parser to control the granularity of output chunks.
     /// - Returns: The `SwiftUI.Text` initialized from the result of sending `localizedString(forKey:value:table:)` to bundle, passing the specified key, value, and tableName, and translating by the BudouX parser.
     @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
-    public func BudouXText(_ key: String, tableName: String? = nil, bundle: Bundle? = nil, comment: StaticString? = nil, parser: BudouX.Parser = .init(), threshold: Int = Parser.defaultThreshold) -> Text {
+    public func BudouXText(_ key: String, tableName: String? = nil, bundle: Bundle? = nil, comment: StaticString? = nil, parser: Parser = .init(), threshold: Int = Parser.defaultThreshold) -> Text {
+        guard supportedNaturalLanguages.contains(currentLocalizationKey) else {
+            return Text(LocalizedStringKey(key), tableName: tableName, bundle: bundle, comment: comment)
+        }
         let content = NSLocalizedString(key, tableName: tableName, bundle: bundle ?? .main, comment: (comment?.description ?? ""))
         return BudouXText(verbatim: content, parser: parser, threshold: threshold)
     }
