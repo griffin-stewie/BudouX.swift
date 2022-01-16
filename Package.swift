@@ -5,6 +5,7 @@ import PackageDescription
 
 let package = Package(
     name: "BudouX.swift",
+    defaultLocalization: "en",
     products: [
         .library(
             name: "BudouX",
