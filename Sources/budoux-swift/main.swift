@@ -27,7 +27,7 @@ struct MainCommand: ParsableCommand {
     static var configuration = CommandConfiguration(
         commandName: "budoux-swift",
         abstract: "budoux-swift is BudouX swift port. BudouX is the successor to Budou, the machine learning powered line break organizer tool.",
-        version: "0.3.0"
+        version: "0.4.0"
     )
 
     @Flag(name: [.customLong("swift-string"), .customShort("s")], help: ArgumentHelp("Swift String mode"))
