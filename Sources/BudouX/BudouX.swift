@@ -6,5 +6,8 @@
 //
 //
 
+/// List of natural languages supported by BudouX parser.
+public let supportedNaturalLanguages = ["ja"]
+
 /// ML Model acts as namespace. See JaKNBCModel.swift.
 public struct Model {}
