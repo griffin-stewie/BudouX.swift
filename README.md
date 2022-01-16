@@ -52,6 +52,32 @@ If you need a function which translate an HTML string by wrapping phrases with n
 
 [griffin-stewie/HTMLBudouX.swift](https://github.com/griffin-stewie/HTMLBudouX.swift)
 
+### For `SwiftUI.Text`
+
+You can also use methods for SwiftUI's `Text` in iOS 13.0+, macOS 10.15+, Mac Catalyst 13.0+, tvOS 13.0+, and watchOS 6.0+.
+
+![](Docs/assets/swiftui.png)
+
+```swift
+import SwiftUI
+import BudouX
+
+struct ContentView: View {
+    static let content = "あのイーハトーヴォのすきとおった風、夏でも底に冷たさをもつ青いそら、うつくしい森で飾られたモリーオ市、郊外のぎらぎらひかる草の波。"
+
+    let swiftuiText: SwiftUI.Text = Text(content)
+    let budouxText: SwiftUI.Text = BudouXText(content)
+    
+    var body: some View {
+        VStack {
+            swiftuiText
+            budouxText
+        }
+        .multilineTextAlignment(.center)
+    }
+}
+```
+
 ## Install
 
 Support Swift Package Manager only. There are no plans to support other package management tools at this time.
