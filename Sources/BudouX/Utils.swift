@@ -36,3 +36,8 @@ func bisectRight(arr: [Int], i: Int) -> Int {
 
 /// The separator string to specify breakpoints.
 let separator = "_"
+
+/// A key to identify the language of the execution environment.
+var currentLocalizationKey: String {
+    NSLocalizedString("net.cyan-stivy.budoux-swift.LocalizationFinder.Key", tableName: "Localizable", bundle: .module, comment: "")
+}
