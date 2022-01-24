@@ -42,6 +42,9 @@ struct MainCommand: ParsableCommand {
     @Option(name: [.customLong("model"), .customShort("m")], help: ArgumentHelp("custom model file path (default: built-in ja-knbc.json)"))
     var customModelJSONPath: Path?
 
+    @Option(name: [.customLong("language"), .customShort("l")], parsing: .singleValue, help: ArgumentHelp("natural language (following the IETF format) that the custom model file supports. (example: ja)"))
+    var supportedNaturalLanguages: [String] = []
+
     @Argument(help: ArgumentHelp("text", valueName: "TXT"))
     var argument: String?
 
@@ -56,7 +59,7 @@ struct MainCommand: ParsableCommand {
             input = read
         }
 
-        let model = try loadCustomModelJSON(from: customModelJSONPath) ?? Model.jaKNBCModel
+        let model: Model = try loadCustomModel(from: customModelJSONPath, supportedNaturalLanguages: Set(supportedNaturalLanguages)) ?? JaKNBCModel()
         let parser = Parser(model: model)
         let splitedTextsByNewline = input.components(separatedBy: .newlines).filter({ !$0.isEmpty })
 
@@ -90,16 +93,16 @@ struct MainCommand: ParsableCommand {
         return inputs.joined(separator: "\n")
     }
 
-    private func loadCustomModelJSON(from path: Path?) throws -> [String: Int]? {
+    private func loadCustomModel(from path: Path?, supportedNaturalLanguages: Set<String>) throws -> CustomModel? {
         guard let path = path else {
             return nil
         }
 
-        guard let model = try JSONSerialization.jsonObject(with: try Data(contentsOf: path), options: []) as? [String: Int] else {
+        guard let featureAndScore = try JSONSerialization.jsonObject(with: try Data(contentsOf: path), options: []) as? [String: Int] else {
             return nil
         }
 
-        return model
+        return CustomModel(supportedNaturalLanguages: supportedNaturalLanguages, featureAndScore: featureAndScore)
     }
 }
 
