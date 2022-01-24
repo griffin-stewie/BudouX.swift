@@ -49,7 +49,7 @@ struct GenerateData: ParsableCommand {
     func generateUnicodeBlocksCode(data: Data) -> String {
         """
         // swift-format-ignore-file
-        extension Model {
+        extension Parser {
             static let unicodeBlocks = \(String(data: data, encoding: .utf8)!)
         }
         """

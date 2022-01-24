@@ -22,11 +22,11 @@ extension Parser {
 /// The main parser object with a variety of class methods to provide semantic
 /// chunks and markups from the given input string.
 public struct Parser {
-    let model: [String: Int]
+    let model: Model
 
     /// Initializer.
-    /// - Parameter model: A model mapping a feature (str) and its score (int). Default is built-in jaKNBCModel.
-    public init(model: [String: Int] = Model.jaKNBCModel) {
+    /// - Parameter model: A model mapping a feature (str) and its score (int). Default is built-in JaKNBCModel.
+    public init(model: Model = JaKNBCModel()) {
         self.model = model
     }
 
@@ -39,7 +39,7 @@ public struct Parser {
             bn = 999
         } else {
             let cp = w.utf16[w.utf16.startIndex]
-            bn = bisectRight(arr: Model.unicodeBlocks, i: Int(cp))
+            bn = bisectRight(arr: unicodeBlocks, i: Int(cp))
         }
 
         return String(format: "%03d", bn)
@@ -166,7 +166,7 @@ public struct Parser {
 
             let score =
                 feature
-                .map { model[$0] ?? 0 }
+                .map { model.featureAndScore[$0] ?? 0 }
                 .reduce(0, +)
             let p = score > 0 ? "B" : "O"
             if score > threshold {

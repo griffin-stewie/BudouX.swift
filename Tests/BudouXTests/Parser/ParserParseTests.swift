@@ -4,21 +4,26 @@ import XCTest
 
 final class ParserParseTests: XCTestCase {
 
+    struct ModelForTest: Model {
+        let supportedNaturalLanguages: Set<String> = []
+        let featureAndScore: [String: Int]
+    }
+
     let testSentence = "abcdeabcd"
 
     func testShouldSeparateButNotTheFirstTwoCharacters() throws {
-        let model = [
+        let model = ModelForTest(featureAndScore: [
             "UW4:a": 10000  // means "should separate right before 'a'".
-        ]
+        ])
         let parser = Parser(model: model)
         let result = parser.parse(sentence: testSentence)
         XCTAssertEqual(result, ["abcde", "abcd"])
     }
 
     func testShouldRespectTheResultsFeatureWithAHighScore() throws {
-        let model = [
+        let model = ModelForTest(featureAndScore: [
             "BP2:UU": 10000  // previous results are Unknown and Unknown.
-        ]
+        ])
         let parser = Parser(model: model)
         let result = parser.parse(sentence: testSentence)
         XCTAssertEqual(result, ["abc", "deabcd"])
@@ -26,7 +31,7 @@ final class ParserParseTests: XCTestCase {
     }
 
     func testShouldIgnoreFeaturesWithScoresLowerThanTheThreshold() throws {
-        let model = ["UW4:a": 10]
+        let model = ModelForTest(featureAndScore: ["UW4:a": 10])
         let parser = Parser(model: model)
         let result = parser.parse(sentence: testSentence, threshold: 100)
         XCTAssertEqual(result, [testSentence])
@@ -34,7 +39,7 @@ final class ParserParseTests: XCTestCase {
     }
 
     func testShouldReturnABlankListWhenTheInputIsBlank() throws {
-        let model: [String: Int] = [:]
+        let model = ModelForTest(featureAndScore: [:])
         let parser = Parser(model: model)
         let result = parser.parse(sentence: "")
         XCTAssertTrue(result.isEmpty)
