@@ -99,5 +99,5 @@ package.targets.append(
 For this package maintainer, run following command to update `Sources/BudouX/Data/JaKNBCModel.swift` and `Sources/BudouX/Data/UnicodeBlocks.swift` from [original BudouX](https://github.com/google/budoux).
 
 ```sh
-make update_data 
+make generate_data 
 ```
