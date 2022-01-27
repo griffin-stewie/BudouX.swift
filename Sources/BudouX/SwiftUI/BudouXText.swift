@@ -61,7 +61,7 @@
         return BudouXText(verbatim: content, parser: parser, threshold: threshold, condition: condition)
     }
 
-
+    /// Default implementation of a condition of whether to perform translation by the BudouX parser based on the argument of the natural languages supported by the parser.
     public let defaultBudouXTextCondition: (Set<String>) -> Bool = { naturalLanguagesSupportedByParser in
         naturalLanguagesSupportedByParser.contains(currentLocalizationKey)
     }
