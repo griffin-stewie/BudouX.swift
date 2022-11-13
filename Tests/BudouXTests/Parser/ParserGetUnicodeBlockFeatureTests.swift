@@ -13,19 +13,27 @@ final class ParserGetUnicodeBlockFeatureTests: XCTestCase {
 
     // MARK: - Test
 
-    func testShouldEncodeTheCharacterToAUnicodeBlockIndex() throws {
-        testFeature("あ", "108")
-    }
-
-    func testShouldProcessTheFirstCharacterOnly() throws {
-        testFeature("あ亜。", "108")
-    }
-
-    func testShouldReturnIn3DigitsEvenIfTheIndexIsSmall() throws {
+    func testAShouldBeThe1stBlockBasicLatine() throws {
         testFeature("a", "001")
     }
 
-    func testShouldReturnTheDefaultValueIfTheCodePointIsUndefined() throws {
-        testFeature("", "999")
+    func testあShouldBeThe108thBlockHiragana() throws {
+        testFeature("あ", "108")
+    }
+
+    func test安ShouldBeThe120thBlockKanji() throws {
+        testFeature("安", "120")
+    }
+
+    func testOnlyTheFirstCharacterShouldBeRecognized() throws {
+        testFeature("あ安", "108")
+    }
+
+    func testShouldReturnINVALIDWhenABlankStringIsGiven() throws {
+        testFeature("", invalid)
+    }
+
+    func testShouldReturnINVALIDWhenINVALIDIsGiven() throws {
+        testFeature(invalid, invalid)
     }
 }

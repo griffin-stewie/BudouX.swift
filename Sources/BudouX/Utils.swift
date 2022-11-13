@@ -36,3 +36,7 @@ func bisectRight(arr: [Int], i: Int) -> Int {
 
 /// The separator string to specify breakpoints.
 let separator = "_"
+
+
+/// The invalid feature string.
+let invalid = "▔"

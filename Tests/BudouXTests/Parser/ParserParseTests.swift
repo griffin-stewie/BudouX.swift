@@ -11,7 +11,7 @@ final class ParserParseTests: XCTestCase {
 
     let testSentence = "abcdeabcd"
 
-    func testShouldSeparateButNotTheFirstTwoCharacters() throws {
+    func testShouldSeparateIfAStrongFeatureItemSupports() throws {
         let model = ModelForTest(featureAndScore: [
             "UW4:a": 10000  // means "should separate right before 'a'".
         ])
@@ -20,13 +20,13 @@ final class ParserParseTests: XCTestCase {
         XCTAssertEqual(result, ["abcde", "abcd"])
     }
 
-    func testShouldRespectTheResultsFeatureWithAHighScore() throws {
+    func testShouldSeparateEvenIfItMakesTheFirstCharacterASolePhrase() throws {
         let model = ModelForTest(featureAndScore: [
-            "BP2:UU": 10000  // previous results are Unknown and Unknown.
+            "UW4:b": 10000 // means "should separate right before 'b'".
         ])
         let parser = Parser(model: model)
         let result = parser.parse(sentence: testSentence)
-        XCTAssertEqual(result, ["abc", "deabcd"])
+        XCTAssertEqual(result, ["a", "bcdea", "bcd"])
 
     }
 

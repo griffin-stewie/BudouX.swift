@@ -34,14 +34,11 @@ public struct Parser {
     /// - Parameter w: A character input.
     /// - Returns: A Unicode Block feature.
     static func getUnicodeBlockFeature(_ w: String) -> String {
-        let bn: Int
-        if w.isEmpty {
-            bn = 999
-        } else {
-            let cp = w.utf16[w.utf16.startIndex]
-            bn = bisectRight(arr: unicodeBlocks, i: Int(cp))
+        if w.isEmpty || w == invalid {
+            return invalid
         }
-
+        let cp = w.utf16[w.utf16.startIndex]
+        let bn: Int = bisectRight(arr: unicodeBlocks, i: Int(cp))
         return String(format: "%03d", bn)
     }
 
@@ -118,7 +115,9 @@ public struct Parser {
             "TQ3": p3 + b1 + b2 + b3,
             "TQ4": p3 + b2 + b3 + b4,
         ]
-        return rawFeature.map { (key, value) -> String in "\(key):\(value)" }
+        return rawFeature
+            .filter { (_, value) -> Bool in !value.contains(invalid) }
+            .map { (key, value) -> String in "\(key):\(value)" }
     }
 
     static func getFeature(
@@ -149,17 +148,16 @@ public struct Parser {
         var p2 = "U"
         var p3 = "U"
 
-        let index = sentence.index(sentence.startIndex, offsetBy: 3)
-        var result = [String(sentence.prefix(upTo: index))]
+        var result = [String(sentence[sentence.startIndex])]
 
-        for i in 3..<sentence.count {
+        for i in 1..<sentence.count {
             let feature = Parser.getFeature(
-                w1: sentence.string(at: i - 3)!,
-                w2: sentence.string(at: i - 2)!,
+                w1: sentence.string(at: i - 3) ?? invalid,
+                w2: sentence.string(at: i - 2) ?? invalid,
                 w3: sentence.string(at: i - 1)!,
                 w4: sentence.string(at: i)!,
-                w5: sentence.string(at: i + 1) ?? "",
-                w6: sentence.string(at: i + 2) ?? "",
+                w5: sentence.string(at: i + 1) ?? invalid,
+                w6: sentence.string(at: i + 2) ?? invalid,
                 p1: p1,
                 p2: p2,
                 p3: p3)
@@ -215,6 +213,9 @@ extension Parser {
 
 extension String {
     func string(at index: Int) -> String? {
+        guard index >= 0 else {
+            return nil
+        }
         guard index < count else {
             return nil
         }
