@@ -30,14 +30,6 @@ final class ParserParseTests: XCTestCase {
 
     }
 
-    func testShouldIgnoreFeaturesWithScoresLowerThanTheThreshold() throws {
-        let model = ModelForTest(featureAndScore: ["UW4:a": 10])
-        let parser = Parser(model: model)
-        let result = parser.parse(sentence: testSentence, threshold: 100)
-        XCTAssertEqual(result, [testSentence])
-
-    }
-
     func testShouldReturnABlankListWhenTheInputIsBlank() throws {
         let model = ModelForTest(featureAndScore: [:])
         let parser = Parser(model: model)

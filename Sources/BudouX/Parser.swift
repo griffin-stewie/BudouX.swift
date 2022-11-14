@@ -9,9 +9,6 @@
 import Foundation
 
 extension Parser {
-    /// The default threshold value for the parser.
-    public static let defaultThreshold = 1000
-
     /// A character to connect characters so that they are not easily broken into new lines.
     public static let wordJoiner: String = "\u{2060}"
 
@@ -137,9 +134,8 @@ public struct Parser {
     /// Parses the input sentence and returns a list of semantic chunks.
     /// - Parameters:
     ///   - sentence: sentence An input sentence.
-    ///   - threshold: A threshold score to control the granularity of output chunks.
     /// - Returns: The retrieved chunks.
-    public func parse(sentence: String, threshold: Int = Parser.defaultThreshold) -> [String] {
+    public func parse(sentence: String) -> [String] {
         guard !sentence.isEmpty else {
             return []
         }
@@ -149,6 +145,7 @@ public struct Parser {
         var p3 = "U"
 
         var result = [String(sentence[sentence.startIndex])]
+        let baseScore = -(model.values.sum())
 
         for i in 1..<sentence.count {
             let feature = Parser.getFeature(
@@ -162,12 +159,11 @@ public struct Parser {
                 p2: p2,
                 p3: p3)
 
-            let score =
-                feature
+            let score = baseScore + 2 * feature
                 .map { model.featureAndScore[$0] ?? 0 }
-                .reduce(0, +)
+                .sum()
             let p = score > 0 ? "B" : "O"
-            if score > threshold {
+            if score > 0 {
                 result.append("")
             }
 
@@ -188,10 +184,9 @@ extension Parser {
     /// Translates the given `String` to another `String` with word joiners and zero width spaces for semantic line breaks.
     /// - Parameters:
     ///   - sentence: An input sentence.
-    ///   - threshold: A threshold score to control the granularity of output chunks.
     /// - Returns: The translated `String`.
-    public func translate(sentence: String, threshold: Int = Parser.defaultThreshold) -> String {
-        let chunks = parse(sentence: sentence, threshold: threshold)
+    public func translate(sentence: String) -> String {
+        let chunks = parse(sentence: sentence)
         return insertSpaces(chunks)
     }
 
@@ -223,5 +218,11 @@ extension String {
             return nil
         }
         return String(self[strIndex])
+    }
+}
+
+extension Model {
+    var values: [Int] {
+        featureAndScore.values.map { $0 }
     }
 }
