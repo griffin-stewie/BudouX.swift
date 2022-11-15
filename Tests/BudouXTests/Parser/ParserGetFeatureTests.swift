@@ -14,13 +14,10 @@ final class ParserGetFeatureTests: XCTestCase {
             w6: "f")
 
         XCTAssertTrue(feature.contains("UW1:a"))
-        XCTAssertTrue(feature.contains("UB1:001"))
 
         XCTAssertTrue(feature.contains("BW1:bc"))
-        XCTAssertTrue(feature.contains("BB1:001001"))
 
         XCTAssertTrue(feature.contains("TW1:abc"))
-        XCTAssertTrue(feature.contains("TB1:001001001"))
     }
 
 
@@ -45,8 +42,6 @@ final class ParserGetFeatureTests: XCTestCase {
         }
 
         XCTAssertFalse(findByPrefix(prefix: "UW3", feature: feature))
-        XCTAssertFalse(findByPrefix(prefix: "UB3", feature: feature))
         XCTAssertFalse(findByPrefix(prefix: "BW2", feature: feature))
-        XCTAssertFalse(findByPrefix(prefix: "BB2", feature: feature))
     }
 }

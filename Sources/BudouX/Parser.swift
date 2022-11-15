@@ -27,18 +27,6 @@ public struct Parser {
         self.model = model
     }
 
-    /// Generates a Unicode Block feature from the given character.
-    /// - Parameter w: A character input.
-    /// - Returns: A Unicode Block feature.
-    static func getUnicodeBlockFeature(_ w: String) -> String {
-        if w.isEmpty || w == invalid {
-            return invalid
-        }
-        let cp = w.utf16[w.utf16.startIndex]
-        let bn: Int = bisectRight(arr: unicodeBlocks, i: Int(cp))
-        return String(format: "%03d", bn)
-    }
-
     /// Generates a feature from characters around (w1-w6).
     /// - Parameters:
     ///   - w1: The character 3 characters before the break point.
@@ -56,12 +44,6 @@ public struct Parser {
         w5: String,
         w6: String
     ) -> [String] {
-        let b1 = Parser.getUnicodeBlockFeature(w1)
-        let b2 = Parser.getUnicodeBlockFeature(w2)
-        let b3 = Parser.getUnicodeBlockFeature(w3)
-        let b4 = Parser.getUnicodeBlockFeature(w4)
-        let b5 = Parser.getUnicodeBlockFeature(w5)
-        let b6 = Parser.getUnicodeBlockFeature(w6)
         let rawFeature = [
             "UW1": w1,
             "UW2": w2,
@@ -76,19 +58,6 @@ public struct Parser {
             "TW2": w2 + w3 + w4,
             "TW3": w3 + w4 + w5,
             "TW4": w4 + w5 + w6,
-            "UB1": b1,
-            "UB2": b2,
-            "UB3": b3,
-            "UB4": b4,
-            "UB5": b5,
-            "UB6": b6,
-            "BB1": b2 + b3,
-            "BB2": b3 + b4,
-            "BB3": b4 + b5,
-            "TB1": b1 + b2 + b3,
-            "TB2": b2 + b3 + b4,
-            "TB3": b3 + b4 + b5,
-            "TB4": b4 + b5 + b6,
         ]
         return rawFeature
             .filter { (_, value) -> Bool in !value.contains(invalid) }

@@ -40,7 +40,6 @@ struct GenerateData: ParsableCommand {
         case repositoryRootDirectory
     }
 
-    let unicodeBlocksJSONURL: URL = URL(string: "https://raw.githubusercontent.com/google/budoux/main/budoux/unicode_blocks.json")!
     let jaKNBCJSONURL: URL = URL(string: "https://raw.githubusercontent.com/google/budoux/main/budoux/models/ja-knbc.json")!
 
     @Option(name: [.short, .customLong("repo-root")], help: "The GitHub repository to search for changes.")
@@ -71,12 +70,8 @@ struct GenerateData: ParsableCommand {
             """
     }
 
-    mutating func run() throws {
-        let unicodeBlocksJSONData = try Data(contentsOf: unicodeBlocksJSONURL)
-        let unicodeBlocksSwiftPath = repositoryRootDirectory.appendingPathComponent("Sources/BudouX/Data/UnicodeBlocks.swift")
-        try generateUnicodeBlocksCode(data: unicodeBlocksJSONData)
-            .write(toFile: unicodeBlocksSwiftPath.path, atomically: true, encoding: .utf8)
 
+    mutating func run() throws {
         let jaKNBCJSONData = try Data(contentsOf: jaKNBCJSONURL)
         let jaKNBCSwiftPath = repositoryRootDirectory.appendingPathComponent("Sources/BudouX/Data/JaKNBCModel.swift")
         try generateJaKNBCCode(data: jaKNBCJSONData)
