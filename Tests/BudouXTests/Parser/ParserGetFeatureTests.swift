@@ -11,19 +11,13 @@ final class ParserGetFeatureTests: XCTestCase {
             w3: "c",
             w4: "d",
             w5: "e",
-            w6: "f",
-            p1: "x",
-            p2: "y",
-            p3: "z")
+            w6: "f")
 
         XCTAssertTrue(feature.contains("UW1:a"))
-
         XCTAssertTrue(feature.contains("UB1:001"))
-        XCTAssertTrue(feature.contains("UP1:x"))
 
         XCTAssertTrue(feature.contains("BW1:bc"))
         XCTAssertTrue(feature.contains("BB1:001001"))
-        XCTAssertTrue(feature.contains("BP1:xy"))
 
         XCTAssertTrue(feature.contains("TW1:abc"))
         XCTAssertTrue(feature.contains("TB1:001001001"))
@@ -37,10 +31,7 @@ final class ParserGetFeatureTests: XCTestCase {
             w3: invalid,
             w4: "a",
             w5: "a",
-            w6: "a",
-            p1: "a",
-            p2: "a",
-            p3: "a")
+            w6: "a")
 
 
         func findByPrefix(prefix: String, feature: [String]) -> Bool {

@@ -39,7 +39,7 @@ public struct Parser {
         return String(format: "%03d", bn)
     }
 
-    /// Generates a feature from characters around (w1-w6) and past results (p1-p3).
+    /// Generates a feature from characters around (w1-w6).
     /// - Parameters:
     ///   - w1: The character 3 characters before the break point.
     ///   - w2: The character 2 characters before the break point.
@@ -47,9 +47,6 @@ public struct Parser {
     ///   - w4: The character right after the break point.
     ///   - w5: The character 2 characters after the break point.
     ///   - w6: The character 3 characters after the break point.
-    ///   - p1: The result 3 steps ago.
-    ///   - p2: The result 2 steps ago.
-    ///   - p3: The last result.
     /// - Returns: A feature to be consumed by a classifier.
     static func getFeature(
         w1: String,
@@ -57,10 +54,7 @@ public struct Parser {
         w3: String,
         w4: String,
         w5: String,
-        w6: String,
-        p1: String,
-        p2: String,
-        p3: String
+        w6: String
     ) -> [String] {
         let b1 = Parser.getUnicodeBlockFeature(w1)
         let b2 = Parser.getUnicodeBlockFeature(w2)
@@ -69,11 +63,6 @@ public struct Parser {
         let b5 = Parser.getUnicodeBlockFeature(w5)
         let b6 = Parser.getUnicodeBlockFeature(w6)
         let rawFeature = [
-            "UP1": p1,
-            "UP2": p2,
-            "UP3": p3,
-            "BP1": p1 + p2,
-            "BP2": p2 + p3,
             "UW1": w1,
             "UW2": w2,
             "UW3": w3,
@@ -100,17 +89,6 @@ public struct Parser {
             "TB2": b2 + b3 + b4,
             "TB3": b3 + b4 + b5,
             "TB4": b4 + b5 + b6,
-            "UQ1": p1 + b1,
-            "UQ2": p2 + b2,
-            "UQ3": p3 + b3,
-            "BQ1": p2 + b2 + b3,
-            "BQ2": p2 + b3 + b4,
-            "BQ3": p3 + b2 + b3,
-            "BQ4": p3 + b3 + b4,
-            "TQ1": p2 + b1 + b2 + b3,
-            "TQ2": p2 + b2 + b3 + b4,
-            "TQ3": p3 + b1 + b2 + b3,
-            "TQ4": p3 + b2 + b3 + b4,
         ]
         return rawFeature
             .filter { (_, value) -> Bool in !value.contains(invalid) }
@@ -123,12 +101,9 @@ public struct Parser {
         w3: Character,
         w4: Character,
         w5: Character,
-        w6: Character,
-        p1: Character,
-        p2: Character,
-        p3: Character
+        w6: Character
     ) -> [String] {
-        return getFeature(w1: String(w1), w2: String(w2), w3: String(w3), w4: String(w4), w5: String(w5), w6: String(w6), p1: String(p1), p2: String(p2), p3: String(p3))
+        return getFeature(w1: String(w1), w2: String(w2), w3: String(w3), w4: String(w4), w5: String(w5), w6: String(w6))
     }
 
     /// Parses the input sentence and returns a list of semantic chunks.
@@ -140,10 +115,6 @@ public struct Parser {
             return []
         }
 
-        var p1 = "U"
-        var p2 = "U"
-        var p3 = "U"
-
         var result = [String(sentence[sentence.startIndex])]
         let baseScore = -(model.values.sum())
 
@@ -154,23 +125,17 @@ public struct Parser {
                 w3: sentence.string(at: i - 1)!,
                 w4: sentence.string(at: i)!,
                 w5: sentence.string(at: i + 1) ?? invalid,
-                w6: sentence.string(at: i + 2) ?? invalid,
-                p1: p1,
-                p2: p2,
-                p3: p3)
+                w6: sentence.string(at: i + 2) ?? invalid
+            )
 
             let score = baseScore + 2 * feature
                 .map { model.featureAndScore[$0] ?? 0 }
                 .sum()
-            let p = score > 0 ? "B" : "O"
             if score > 0 {
                 result.append("")
             }
 
             result[result.count - 1] += sentence.string(at: i)!
-            p1 = p2
-            p2 = p3
-            p3 = p
         }
 
         return result
