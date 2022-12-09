@@ -40,8 +40,8 @@ struct GenerateData: ParsableCommand {
         case repositoryRootDirectory
     }
 
-    let unicodeBlocksJSONURL: URL = URL(string: "https://raw.githubusercontent.com/google/budoux/main/budoux/unicode_blocks.json")!
     let jaKNBCJSONURL: URL = URL(string: "https://raw.githubusercontent.com/google/budoux/main/budoux/models/ja-knbc.json")!
+    let zhHansJSONURL: URL = URL(string: "https://raw.githubusercontent.com/google/budoux/main/budoux/models/zh-hans.json")!
 
     @Option(name: [.short, .customLong("repo-root")], help: "The GitHub repository to search for changes.")
     var repositoryRootDirectory: URL = URL(fileURLWithPath: FileManager.default.currentDirectoryPath)
@@ -71,16 +71,32 @@ struct GenerateData: ParsableCommand {
             """
     }
 
-    mutating func run() throws {
-        let unicodeBlocksJSONData = try Data(contentsOf: unicodeBlocksJSONURL)
-        let unicodeBlocksSwiftPath = repositoryRootDirectory.appendingPathComponent("Sources/BudouX/Data/UnicodeBlocks.swift")
-        try generateUnicodeBlocksCode(data: unicodeBlocksJSONData)
-            .write(toFile: unicodeBlocksSwiftPath.path, atomically: true, encoding: .utf8)
+    func generateZhHansModelCode(data: Data) -> String {
+        let jsonStr = String(data: data, encoding: .utf8)!
+            .replacingOccurrences(of: "{", with: "[")
+            .replacingOccurrences(of: "}", with: "]")
+            .escapingUnicode()
+        return """
+            // swift-format-ignore-file
+            public struct ZhHansModel: Model {
+                public init() {}
+                public let supportedNaturalLanguages: Set = ["zh-Hans"]
+                /// Default built-in model mapping a feature (str) and its score (int).
+                public let featureAndScore: [String: Int] = \(jsonStr)
+            }
+            """
+    }
 
+    mutating func run() throws {
         let jaKNBCJSONData = try Data(contentsOf: jaKNBCJSONURL)
         let jaKNBCSwiftPath = repositoryRootDirectory.appendingPathComponent("Sources/BudouX/Data/JaKNBCModel.swift")
         try generateJaKNBCCode(data: jaKNBCJSONData)
             .write(toFile: jaKNBCSwiftPath.path, atomically: true, encoding: .utf8)
+
+        let zhHansJSONData = try Data(contentsOf: zhHansJSONURL)
+        let zhHansSwiftPath = repositoryRootDirectory.appendingPathComponent("Sources/BudouX/Data/ZhHansModel.swift")
+        try generateZhHansModelCode(data: zhHansJSONData)
+            .write(toFile: zhHansSwiftPath.path, atomically: true, encoding: .utf8)
     }
 }
 

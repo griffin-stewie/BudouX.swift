@@ -36,9 +36,6 @@ struct MainCommand: ParsableCommand {
     @Option(name: [.customLong("delim"), .customShort("d")], help: ArgumentHelp("output delimiter in TEXT mode"))
     var delimiter = "---"
 
-    @Option(name: [.customLong("thres"), .customShort("t")], help: ArgumentHelp("threshold value to separate chunk"))
-    var threshold: Int = Parser.defaultThreshold
-
     @Option(name: [.customLong("model"), .customShort("m")], help: ArgumentHelp("custom model file path (default: built-in ja-knbc.json)"))
     var customModelJSONPath: Path?
 
@@ -65,11 +62,11 @@ struct MainCommand: ParsableCommand {
 
         if swiftStringMode {
             for text in splitedTextsByNewline {
-                print(parser.translate(sentence: text, threshold: threshold))
+                print(parser.translate(sentence: text))
             }
         } else {
             for (i, text) in splitedTextsByNewline.enumerated() {
-                let results = parser.parse(sentence: text, threshold: threshold)
+                let results = parser.parse(sentence: text)
                 for t in results {
                     print(t)
                 }

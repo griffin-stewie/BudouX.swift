@@ -11,7 +11,7 @@ final class ParserParseTests: XCTestCase {
 
     let testSentence = "abcdeabcd"
 
-    func testShouldSeparateButNotTheFirstTwoCharacters() throws {
+    func testShouldSeparateIfAStrongFeatureItemSupports() throws {
         let model = ModelForTest(featureAndScore: [
             "UW4:a": 10000  // means "should separate right before 'a'".
         ])
@@ -20,21 +20,13 @@ final class ParserParseTests: XCTestCase {
         XCTAssertEqual(result, ["abcde", "abcd"])
     }
 
-    func testShouldRespectTheResultsFeatureWithAHighScore() throws {
+    func testShouldSeparateEvenIfItMakesTheFirstCharacterASolePhrase() throws {
         let model = ModelForTest(featureAndScore: [
-            "BP2:UU": 10000  // previous results are Unknown and Unknown.
+            "UW4:b": 10000  // means "should separate right before 'b'".
         ])
         let parser = Parser(model: model)
         let result = parser.parse(sentence: testSentence)
-        XCTAssertEqual(result, ["abc", "deabcd"])
-
-    }
-
-    func testShouldIgnoreFeaturesWithScoresLowerThanTheThreshold() throws {
-        let model = ModelForTest(featureAndScore: ["UW4:a": 10])
-        let parser = Parser(model: model)
-        let result = parser.parse(sentence: testSentence, threshold: 100)
-        XCTAssertEqual(result, [testSentence])
+        XCTAssertEqual(result, ["a", "bcdea", "bcd"])
 
     }
 
@@ -49,7 +41,13 @@ final class ParserParseTests: XCTestCase {
         let parser = Parser()
         let result = parser.parse(sentence: "この記事は、大学生限定クリエイティブコミュニティ GeekSalon Advent Calendar 2021 3 日目の記事です。")
         print(result)
-        XCTAssertEqual(result, ["この記事は、", "大学生限定クリエイティブコミュニティ GeekSalon Advent Calendar 2021 3 日目の", "記事です。"])
+        let expected = [
+            "この",
+            "記事は、",
+            "大学生限定クリエイティブコミュニティ GeekSalon Advent Calendar 2021 3 日目の",
+            "記事です。",
+        ]
+        XCTAssertEqual(result, expected)
     }
 
     func testSample2() throws {
@@ -57,23 +55,57 @@ final class ParserParseTests: XCTestCase {
         let result = parser.parse(sentence: "あのイーハトーヴォのすきとおった風、夏でも底に冷たさをもつ青いそら、うつくしい森で飾られたモリーオ市、郊外のぎらぎらひかる草の波。")
         print(result)
         let expected = [
-            "あのイーハトーヴォの",
+            "あの",
+            "イーハトーヴォの",
             "すきと",
-            "おった",
-            "風、",
+            "おった風、",
             "夏でも",
             "底に",
             "冷たさを",
-            "もつ",
-            "青いそら、",
-            "うつくしい",
-            "森で",
+            "もつ青いそら、",
+            "うつくしい森で",
             "飾られた",
             "モリーオ市、",
             "郊外の",
-            "ぎらぎらひかる",
-            "草の",
-            "波。",
+            "ぎら",
+            "ぎら",
+            "ひかる",
+            "草の波。",
+        ]
+        XCTAssertEqual(result, expected)
+    }
+
+    func testSample22() throws {
+        let parser = Parser()
+        let result = parser.parse(sentence: "郊外のぎらぎらひかる草の波。")
+        print(result)
+        let expected = [
+            "郊外の",
+            "ぎら",
+            "ぎら",
+            "ひかる",
+            "草の波。",
+        ]
+        XCTAssertEqual(result, expected)
+    }
+
+
+    func testSample3() throws {
+        let parser = Parser()
+        let result = parser.parse(sentence: "Google の使命は、世界中の情報を整理し、世界中の人がアクセスできて使えるようにすることです。")
+        print(result)
+        let expected = [
+            "Google の",
+            "使命は、",
+            "世界中の",
+            "情報を",
+            "整理し、",
+            "世界中の",
+            "人が",
+            "アクセスできて",
+            "使えるように",
+            "する",
+            "ことです。",
         ]
         XCTAssertEqual(result, expected)
     }

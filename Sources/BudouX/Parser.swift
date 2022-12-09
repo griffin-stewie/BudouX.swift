@@ -9,9 +9,6 @@
 import Foundation
 
 extension Parser {
-    /// The default threshold value for the parser.
-    public static let defaultThreshold = 1000
-
     /// A character to connect characters so that they are not easily broken into new lines.
     public static let wordJoiner: String = "\u{2060}"
 
@@ -30,22 +27,7 @@ public struct Parser {
         self.model = model
     }
 
-    /// Generates a Unicode Block feature from the given character.
-    /// - Parameter w: A character input.
-    /// - Returns: A Unicode Block feature.
-    static func getUnicodeBlockFeature(_ w: String) -> String {
-        let bn: Int
-        if w.isEmpty {
-            bn = 999
-        } else {
-            let cp = w.utf16[w.utf16.startIndex]
-            bn = bisectRight(arr: unicodeBlocks, i: Int(cp))
-        }
-
-        return String(format: "%03d", bn)
-    }
-
-    /// Generates a feature from characters around (w1-w6) and past results (p1-p3).
+    /// Generates a feature from characters around (w1-w6).
     /// - Parameters:
     ///   - w1: The character 3 characters before the break point.
     ///   - w2: The character 2 characters before the break point.
@@ -53,9 +35,6 @@ public struct Parser {
     ///   - w4: The character right after the break point.
     ///   - w5: The character 2 characters after the break point.
     ///   - w6: The character 3 characters after the break point.
-    ///   - p1: The result 3 steps ago.
-    ///   - p2: The result 2 steps ago.
-    ///   - p3: The last result.
     /// - Returns: A feature to be consumed by a classifier.
     static func getFeature(
         w1: String,
@@ -63,23 +42,9 @@ public struct Parser {
         w3: String,
         w4: String,
         w5: String,
-        w6: String,
-        p1: String,
-        p2: String,
-        p3: String
+        w6: String
     ) -> [String] {
-        let b1 = Parser.getUnicodeBlockFeature(w1)
-        let b2 = Parser.getUnicodeBlockFeature(w2)
-        let b3 = Parser.getUnicodeBlockFeature(w3)
-        let b4 = Parser.getUnicodeBlockFeature(w4)
-        let b5 = Parser.getUnicodeBlockFeature(w5)
-        let b6 = Parser.getUnicodeBlockFeature(w6)
         let rawFeature = [
-            "UP1": p1,
-            "UP2": p2,
-            "UP3": p3,
-            "BP1": p1 + p2,
-            "BP2": p2 + p3,
             "UW1": w1,
             "UW2": w2,
             "UW3": w3,
@@ -93,32 +58,11 @@ public struct Parser {
             "TW2": w2 + w3 + w4,
             "TW3": w3 + w4 + w5,
             "TW4": w4 + w5 + w6,
-            "UB1": b1,
-            "UB2": b2,
-            "UB3": b3,
-            "UB4": b4,
-            "UB5": b5,
-            "UB6": b6,
-            "BB1": b2 + b3,
-            "BB2": b3 + b4,
-            "BB3": b4 + b5,
-            "TB1": b1 + b2 + b3,
-            "TB2": b2 + b3 + b4,
-            "TB3": b3 + b4 + b5,
-            "TB4": b4 + b5 + b6,
-            "UQ1": p1 + b1,
-            "UQ2": p2 + b2,
-            "UQ3": p3 + b3,
-            "BQ1": p2 + b2 + b3,
-            "BQ2": p2 + b3 + b4,
-            "BQ3": p3 + b2 + b3,
-            "BQ4": p3 + b3 + b4,
-            "TQ1": p2 + b1 + b2 + b3,
-            "TQ2": p2 + b2 + b3 + b4,
-            "TQ3": p3 + b1 + b2 + b3,
-            "TQ4": p3 + b2 + b3 + b4,
         ]
-        return rawFeature.map { (key, value) -> String in "\(key):\(value)" }
+        return
+            rawFeature
+            .filter { (_, value) -> Bool in !value.contains(invalid) }
+            .map { (key, value) -> String in "\(key):\(value)" }
     }
 
     static func getFeature(
@@ -127,56 +71,43 @@ public struct Parser {
         w3: Character,
         w4: Character,
         w5: Character,
-        w6: Character,
-        p1: Character,
-        p2: Character,
-        p3: Character
+        w6: Character
     ) -> [String] {
-        return getFeature(w1: String(w1), w2: String(w2), w3: String(w3), w4: String(w4), w5: String(w5), w6: String(w6), p1: String(p1), p2: String(p2), p3: String(p3))
+        return getFeature(w1: String(w1), w2: String(w2), w3: String(w3), w4: String(w4), w5: String(w5), w6: String(w6))
     }
 
     /// Parses the input sentence and returns a list of semantic chunks.
     /// - Parameters:
     ///   - sentence: sentence An input sentence.
-    ///   - threshold: A threshold score to control the granularity of output chunks.
     /// - Returns: The retrieved chunks.
-    public func parse(sentence: String, threshold: Int = Parser.defaultThreshold) -> [String] {
+    public func parse(sentence: String) -> [String] {
         guard !sentence.isEmpty else {
             return []
         }
 
-        var p1 = "U"
-        var p2 = "U"
-        var p3 = "U"
+        var result = [String(sentence[sentence.startIndex])]
+        let baseScore = -(model.values.sum())
 
-        let index = sentence.index(sentence.startIndex, offsetBy: 3)
-        var result = [String(sentence.prefix(upTo: index))]
-
-        for i in 3..<sentence.count {
+        for i in 1..<sentence.count {
             let feature = Parser.getFeature(
-                w1: sentence.string(at: i - 3)!,
-                w2: sentence.string(at: i - 2)!,
+                w1: sentence.string(at: i - 3) ?? invalid,
+                w2: sentence.string(at: i - 2) ?? invalid,
                 w3: sentence.string(at: i - 1)!,
                 w4: sentence.string(at: i)!,
-                w5: sentence.string(at: i + 1) ?? "",
-                w6: sentence.string(at: i + 2) ?? "",
-                p1: p1,
-                p2: p2,
-                p3: p3)
+                w5: sentence.string(at: i + 1) ?? invalid,
+                w6: sentence.string(at: i + 2) ?? invalid
+            )
 
             let score =
-                feature
+                baseScore + 2
+                * feature
                 .map { model.featureAndScore[$0] ?? 0 }
-                .reduce(0, +)
-            let p = score > 0 ? "B" : "O"
-            if score > threshold {
+                .sum()
+            if score > 0 {
                 result.append("")
             }
 
             result[result.count - 1] += sentence.string(at: i)!
-            p1 = p2
-            p2 = p3
-            p3 = p
         }
 
         return result
@@ -190,10 +121,9 @@ extension Parser {
     /// Translates the given `String` to another `String` with word joiners and zero width spaces for semantic line breaks.
     /// - Parameters:
     ///   - sentence: An input sentence.
-    ///   - threshold: A threshold score to control the granularity of output chunks.
     /// - Returns: The translated `String`.
-    public func translate(sentence: String, threshold: Int = Parser.defaultThreshold) -> String {
-        let chunks = parse(sentence: sentence, threshold: threshold)
+    public func translate(sentence: String) -> String {
+        let chunks = parse(sentence: sentence)
         return insertSpaces(chunks)
     }
 
@@ -215,6 +145,9 @@ extension Parser {
 
 extension String {
     func string(at index: Int) -> String? {
+        guard index >= 0 else {
+            return nil
+        }
         guard index < count else {
             return nil
         }
@@ -222,5 +155,11 @@ extension String {
             return nil
         }
         return String(self[strIndex])
+    }
+}
+
+extension Model {
+    var values: [Int] {
+        featureAndScore.values.map { $0 }
     }
 }
