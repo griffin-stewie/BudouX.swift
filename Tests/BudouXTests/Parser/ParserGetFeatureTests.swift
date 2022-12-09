@@ -32,10 +32,8 @@ final class ParserGetFeatureTests: XCTestCase {
 
 
         func findByPrefix(prefix: String, feature: [String]) -> Bool {
-            for item in feature {
-                if item.hasPrefix(prefix) {
-                    return true
-                }
+            for item in feature where item.hasPrefix(prefix) {
+                return true
             }
 
             return false

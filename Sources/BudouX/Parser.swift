@@ -59,7 +59,8 @@ public struct Parser {
             "TW3": w3 + w4 + w5,
             "TW4": w4 + w5 + w6,
         ]
-        return rawFeature
+        return
+            rawFeature
             .filter { (_, value) -> Bool in !value.contains(invalid) }
             .map { (key, value) -> String in "\(key):\(value)" }
     }
@@ -97,7 +98,9 @@ public struct Parser {
                 w6: sentence.string(at: i + 2) ?? invalid
             )
 
-            let score = baseScore + 2 * feature
+            let score =
+                baseScore + 2
+                * feature
                 .map { model.featureAndScore[$0] ?? 0 }
                 .sum()
             if score > 0 {
