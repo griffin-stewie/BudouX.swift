@@ -82,7 +82,9 @@ struct MainCommand: ParsableCommand {
             }
         }
     }
+}
 
+extension MainCommand {
     private func readSTDIN() -> String? {
         var inputs: [String] = []
         while let line = readLine() {
