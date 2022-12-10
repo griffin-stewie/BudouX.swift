@@ -1,13 +1,13 @@
 //
 //  Path+Extensions.swift
-//  
+//
 //
 //  Created by griffin-stewie on 2022/12/10.
-//  
+//
 //
 
-import Foundation
 import ArgumentParser
+import Foundation
 import Path
 
 extension Path: ExpressibleByArgument {
