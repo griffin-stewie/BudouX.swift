@@ -28,7 +28,7 @@ struct MainCommandOptions: ParsableArguments {
     var argument: String?
 }
 
-
+@main
 struct MainCommand: ParsableCommand {
 
     enum CommandError: Error, CustomStringConvertible {
@@ -111,4 +111,3 @@ extension MainCommand {
     }
 }
 
-MainCommand.main()
