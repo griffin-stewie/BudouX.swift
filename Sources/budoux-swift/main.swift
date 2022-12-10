@@ -107,25 +107,6 @@ struct MainCommand: ParsableCommand {
 
         return CustomModel(supportedNaturalLanguages: supportedNaturalLanguages, featureAndScore: featureAndScore)
     }
-
-
-}
-
-extension Path: ExpressibleByArgument {
-
-    /// Initializer to confirm `ExpressibleByArgument`
-    public init?(argument: String) {
-        self = Path(argument) ?? Path.cwd / argument
-    }
-
-    /// `defaultValueDescription` to confirm `ExpressibleByArgument`
-    public var defaultValueDescription: String {
-        if self == Path.cwd / "." {
-            return "current directory"
-        }
-
-        return String(describing: self)
-    }
 }
 
 MainCommand.main()
