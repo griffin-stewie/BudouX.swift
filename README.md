@@ -84,7 +84,7 @@ Support Swift Package Manager only. There are no plans to support other package 
 
 ```swift
 package.append(
-    .package(url: "https://github.com/griffin-stewie/BudouX.swift", from: "0.5.0")
+    .package(url: "https://github.com/griffin-stewie/BudouX.swift", from: "0.6.0")
 )
 
 package.targets.append(
