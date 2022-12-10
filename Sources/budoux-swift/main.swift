@@ -11,6 +11,24 @@ import BudouX
 import Foundation
 import Path
 
+struct MainCommandOptions: ParsableArguments {
+    @Flag(name: [.customLong("swift-string"), .customShort("s")], help: ArgumentHelp("Swift String mode"))
+    var swiftStringMode: Bool = false
+
+    @Option(name: [.customLong("delim"), .customShort("d")], help: ArgumentHelp("output delimiter in TEXT mode"))
+    var delimiter = "---"
+
+    @Option(name: [.customLong("model"), .customShort("m")], help: ArgumentHelp("custom model file path (default: built-in ja-knbc.json)"))
+    var customModelJSONPath: Path?
+
+    @Option(name: [.customLong("language"), .customShort("l")], parsing: .singleValue, help: ArgumentHelp("natural language (following the IETF format) that the custom model file supports. (example: ja)"))
+    var supportedNaturalLanguages: [String] = []
+
+    @Argument(help: ArgumentHelp("text", valueName: "TXT"))
+    var argument: String?
+}
+
+
 struct MainCommand: ParsableCommand {
 
     enum CommandError: Error, CustomStringConvertible {
@@ -30,24 +48,12 @@ struct MainCommand: ParsableCommand {
         version: "0.5.0"
     )
 
-    @Flag(name: [.customLong("swift-string"), .customShort("s")], help: ArgumentHelp("Swift String mode"))
-    var swiftStringMode: Bool = false
-
-    @Option(name: [.customLong("delim"), .customShort("d")], help: ArgumentHelp("output delimiter in TEXT mode"))
-    var delimiter = "---"
-
-    @Option(name: [.customLong("model"), .customShort("m")], help: ArgumentHelp("custom model file path (default: built-in ja-knbc.json)"))
-    var customModelJSONPath: Path?
-
-    @Option(name: [.customLong("language"), .customShort("l")], parsing: .singleValue, help: ArgumentHelp("natural language (following the IETF format) that the custom model file supports. (example: ja)"))
-    var supportedNaturalLanguages: [String] = []
-
-    @Argument(help: ArgumentHelp("text", valueName: "TXT"))
-    var argument: String?
+    @OptionGroup()
+    var options: MainCommandOptions
 
     func run() throws {
         let input: String
-        if let arg = argument {
+        if let arg = options.argument {
             input = arg
         } else {
             guard let read = readSTDIN() else {
@@ -56,11 +62,11 @@ struct MainCommand: ParsableCommand {
             input = read
         }
 
-        let model: Model = try loadCustomModel(from: customModelJSONPath, supportedNaturalLanguages: Set(supportedNaturalLanguages)) ?? JaKNBCModel()
+        let model: Model = try loadCustomModel(from: options.customModelJSONPath, supportedNaturalLanguages: Set(options.supportedNaturalLanguages)) ?? JaKNBCModel()
         let parser = Parser(model: model)
         let splitedTextsByNewline = input.components(separatedBy: .newlines).filter({ !$0.isEmpty })
 
-        if swiftStringMode {
+        if options.swiftStringMode {
             for text in splitedTextsByNewline {
                 print(parser.translate(sentence: text))
             }
@@ -71,7 +77,7 @@ struct MainCommand: ParsableCommand {
                     print(t)
                 }
                 if i + 1 != splitedTextsByNewline.endIndex {
-                    print(delimiter)
+                    print(options.delimiter)
                 }
             }
         }
@@ -101,6 +107,8 @@ struct MainCommand: ParsableCommand {
 
         return CustomModel(supportedNaturalLanguages: supportedNaturalLanguages, featureAndScore: featureAndScore)
     }
+
+
 }
 
 extension Path: ExpressibleByArgument {
