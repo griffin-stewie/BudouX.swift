@@ -62,7 +62,7 @@ struct MainCommand: ParsableCommand {
             input = read
         }
 
-        let model: Model = try loadCustomModel(from: options.customModelJSONPath, supportedNaturalLanguages: Set(options.supportedNaturalLanguages)) ?? JaKNBCModel()
+        let model: Model = try loadModel(with: options)
         let parser = Parser(model: model)
         let splitedTextsByNewline = input.components(separatedBy: .newlines).filter({ !$0.isEmpty })
 
@@ -109,5 +109,30 @@ extension MainCommand {
 
         return CustomModel(supportedNaturalLanguages: supportedNaturalLanguages, featureAndScore: featureAndScore)
     }
-}
 
+    private func loadModel(with options: MainCommandOptions) throws -> Model {
+        if let customModel = try loadCustomModel(from: options.customModelJSONPath, supportedNaturalLanguages: Set(options.supportedNaturalLanguages)) {
+            return customModel
+        }
+
+        let jaModel = JaKNBCModel()
+
+        // We only handle last "--language" option
+        guard let lang = options.supportedNaturalLanguages.last else {
+            // use ja-knbc.json model as default.
+            return jaModel
+        }
+
+        if jaModel.supportedNaturalLanguages.contains(lang) {
+            return jaModel
+        }
+
+        let zhHansModel = ZhHansModel()
+        if zhHansModel.supportedNaturalLanguages.contains(lang) {
+            return zhHansModel
+        }
+
+        // fallback to ja as default.
+        return jaModel
+    }
+}
