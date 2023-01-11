@@ -40,7 +40,7 @@ struct GenerateData: ParsableCommand {
         case repositoryRootDirectory
     }
 
-    let jaKNBCJSONURL: URL = URL(string: "https://raw.githubusercontent.com/google/budoux/main/budoux/models/ja-knbc.json")!
+    let jaKNBCJSONURL: URL = URL(string: "https://raw.githubusercontent.com/google/budoux/main/budoux/models/ja.json")!
     let zhHansJSONURL: URL = URL(string: "https://raw.githubusercontent.com/google/budoux/main/budoux/models/zh-hans.json")!
     let zhHantJSONURL: URL = URL(string: "https://raw.githubusercontent.com/google/budoux/main/budoux/models/zh-hant.json")!
 
