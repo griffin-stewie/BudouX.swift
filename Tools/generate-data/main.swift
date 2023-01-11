@@ -42,18 +42,10 @@ struct GenerateData: ParsableCommand {
 
     let jaKNBCJSONURL: URL = URL(string: "https://raw.githubusercontent.com/google/budoux/main/budoux/models/ja-knbc.json")!
     let zhHansJSONURL: URL = URL(string: "https://raw.githubusercontent.com/google/budoux/main/budoux/models/zh-hans.json")!
+    let zhHantJSONURL: URL = URL(string: "https://raw.githubusercontent.com/google/budoux/main/budoux/models/zh-hant.json")!
 
     @Option(name: [.short, .customLong("repo-root")], help: "The GitHub repository to search for changes.")
     var repositoryRootDirectory: URL = URL(fileURLWithPath: FileManager.default.currentDirectoryPath)
-
-    func generateUnicodeBlocksCode(data: Data) -> String {
-        """
-        // swift-format-ignore-file
-        extension Parser {
-            static let unicodeBlocks = \(String(data: data, encoding: .utf8)!)
-        }
-        """
-    }
 
     func generateJaKNBCCode(data: Data) -> String {
         let jsonStr = String(data: data, encoding: .utf8)!
@@ -87,6 +79,22 @@ struct GenerateData: ParsableCommand {
             """
     }
 
+    func generateZhHantModelCode(data: Data) -> String {
+        let jsonStr = String(data: data, encoding: .utf8)!
+            .replacingOccurrences(of: "{", with: "[")
+            .replacingOccurrences(of: "}", with: "]")
+            .escapingUnicode()
+        return """
+            // swift-format-ignore-file
+            public struct ZhHantModel: Model {
+                public init() {}
+                public let supportedNaturalLanguages: Set = ["zh-Hant"]
+                /// Default built-in model mapping a feature (str) and its score (int).
+                public let featureAndScore: [String: Int] = \(jsonStr)
+            }
+            """
+    }
+
     mutating func run() throws {
         let jaKNBCJSONData = try Data(contentsOf: jaKNBCJSONURL)
         let jaKNBCSwiftPath = repositoryRootDirectory.appendingPathComponent("Sources/BudouX/Data/JaKNBCModel.swift")
@@ -97,6 +105,11 @@ struct GenerateData: ParsableCommand {
         let zhHansSwiftPath = repositoryRootDirectory.appendingPathComponent("Sources/BudouX/Data/ZhHansModel.swift")
         try generateZhHansModelCode(data: zhHansJSONData)
             .write(toFile: zhHansSwiftPath.path, atomically: true, encoding: .utf8)
+
+        let zhHantJSONData = try Data(contentsOf: zhHantJSONURL)
+        let zhHantSwiftPath = repositoryRootDirectory.appendingPathComponent("Sources/BudouX/Data/ZhHantModel.swift")
+        try generateZhHantModelCode(data: zhHantJSONData)
+            .write(toFile: zhHantSwiftPath.path, atomically: true, encoding: .utf8)
     }
 }
 
