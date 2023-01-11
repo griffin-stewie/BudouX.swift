@@ -132,6 +132,11 @@ extension MainCommand {
             return zhHansModel
         }
 
+        let zhHantModel = ZhHantModel()
+        if zhHantModel.supportedNaturalLanguages.contains(lang) {
+            return zhHantModel
+        }
+
         // fallback to ja as default.
         return jaModel
     }

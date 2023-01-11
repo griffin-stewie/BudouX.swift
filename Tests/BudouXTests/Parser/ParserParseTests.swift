@@ -90,7 +90,7 @@ final class ParserParseTests: XCTestCase {
     }
 
 
-    func testSample3() throws {
+    func testLoadDefaultJapaneseParser() throws {
         let parser = Parser()
         let result = parser.parse(sentence: "Google の使命は、世界中の情報を整理し、世界中の人がアクセスできて使えるようにすることです。")
         print(result)
@@ -106,6 +106,52 @@ final class ParserParseTests: XCTestCase {
             "使えるように",
             "する",
             "ことです。",
+        ]
+        XCTAssertEqual(result, expected)
+    }
+
+    func testLoadDefaultSimplifiedChineseParser() throws {
+        let parser = Parser(model: ZhHansModel())
+        let result = parser.parse(sentence: "我们的使命是整合全球信息，供大众使用，让人人受益。")
+        print(result)
+        let expected = [
+            "我们",
+            "的",
+            "使命",
+            "是",
+            "整合",
+            "全球",
+            "信息，",
+            "供",
+            "大众",
+            "使用，",
+            "让",
+            "人",
+            "人",
+            "受益。",
+        ]
+        XCTAssertEqual(result, expected)
+    }
+
+    func testLoadDefaultTraditionalChineseParser() throws {
+        let parser = Parser(model: ZhHantModel())
+        let result = parser.parse(sentence: "我們的使命是匯整全球資訊，供大眾使用，使人人受惠。")
+        print(result)
+        let expected = [
+            "我們",
+            "的",
+            "使命",
+            "是",
+            "匯整",
+            "全球",
+            "資訊，",
+            "供",
+            "大眾",
+            "使用，",
+            "使",
+            "人",
+            "人",
+            "受惠。",
         ]
         XCTAssertEqual(result, expected)
     }
