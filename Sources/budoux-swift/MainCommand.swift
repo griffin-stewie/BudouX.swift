@@ -103,7 +103,7 @@ extension MainCommand {
             return nil
         }
 
-        guard let featureAndScore = try JSONSerialization.jsonObject(with: try Data(contentsOf: path), options: []) as? [String: Int] else {
+        guard let featureAndScore = try JSONSerialization.jsonObject(with: try Data(contentsOf: path), options: []) as? [String: [String: Int]] else {
             return nil
         }
 
