@@ -12,7 +12,7 @@ let package = Package(
             targets: ["BudouX"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/apple/swift-argument-parser", exact: "1.2.0"),
+        .package(url: "https://github.com/apple/swift-argument-parser", exact: "1.2.2"),
         .package(url: "https://github.com/mxcl/Path.swift.git", exact: "1.4.0"),
     ],
     targets: [
