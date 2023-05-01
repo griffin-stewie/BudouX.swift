@@ -15,9 +15,9 @@ let separator = "_"
 /// The invalid feature string.
 let invalid = "▔"
 
-extension Collection where Element == Int {
-    func sum() -> Int {
-        reduce(0, +)
+extension Sequence where Element: AdditiveArithmetic {
+    func sum() -> Element {
+        return reduce(.zero, +)
     }
 }
 
