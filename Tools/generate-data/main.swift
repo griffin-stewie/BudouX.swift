@@ -37,12 +37,17 @@ struct GenerateData: ParsableCommand {
     }
 
     enum CodingKeys: String, CodingKey {
+        case commit
         case repositoryRootDirectory
     }
 
-    let jaKNBCJSONURL: URL = URL(string: "https://raw.githubusercontent.com/google/budoux/main/budoux/models/ja.json")!
-    let zhHansJSONURL: URL = URL(string: "https://raw.githubusercontent.com/google/budoux/main/budoux/models/zh-hans.json")!
-    let zhHantJSONURL: URL = URL(string: "https://raw.githubusercontent.com/google/budoux/main/budoux/models/zh-hant.json")!
+    var jaKNBCJSONURL: URL { URL(string: "https://raw.githubusercontent.com/google/budoux/\(commit)/budoux/models/ja.json")! }
+
+    var zhHansJSONURL: URL { URL(string: "https://raw.githubusercontent.com/google/budoux/\(commit)/budoux/models/zh-hans.json")! }
+    var zhHantJSONURL: URL { URL(string: "https://raw.githubusercontent.com/google/budoux/\(commit)/budoux/models/zh-hant.json")! }
+
+    @Option(name: .shortAndLong, help: "The commit hash of model data.")
+    var commit: String = "main"
 
     @Option(name: [.short, .customLong("repo-root")], help: "The GitHub repository to search for changes.")
     var repositoryRootDirectory: URL = URL(fileURLWithPath: FileManager.default.currentDirectoryPath)
@@ -58,7 +63,7 @@ struct GenerateData: ParsableCommand {
                 public init() {}
                 public let supportedNaturalLanguages: Set = ["ja"]
                 /// Default built-in model mapping a feature (str) and its score (int).
-                public let featureAndScore: [String: Int] = \(jsonStr)
+                public let featureAndScore: [String: [String: Int]] = \(jsonStr)
             }
             """
     }
@@ -74,7 +79,7 @@ struct GenerateData: ParsableCommand {
                 public init() {}
                 public let supportedNaturalLanguages: Set = ["zh-Hans"]
                 /// Default built-in model mapping a feature (str) and its score (int).
-                public let featureAndScore: [String: Int] = \(jsonStr)
+                public let featureAndScore: [String: [String: Int]] = \(jsonStr)
             }
             """
     }
@@ -90,7 +95,7 @@ struct GenerateData: ParsableCommand {
                 public init() {}
                 public let supportedNaturalLanguages: Set = ["zh-Hant"]
                 /// Default built-in model mapping a feature (str) and its score (int).
-                public let featureAndScore: [String: Int] = \(jsonStr)
+                public let featureAndScore: [String: [String: Int]] = \(jsonStr)
             }
             """
     }
