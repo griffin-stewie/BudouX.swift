@@ -10,5 +10,5 @@ import Foundation
 
 struct CustomModel: Model {
     let supportedNaturalLanguages: Set<String>
-    let featureAndScore: [String: Int]
+    let featureAndScore: [String: [String: Int]]
 }
