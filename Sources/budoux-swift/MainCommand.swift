@@ -118,22 +118,22 @@ extension MainCommand {
         let jaModel = JaKNBCModel()
 
         // We only handle last "--language" option
-        guard let lang = options.supportedNaturalLanguages.last else {
+        guard let lang = options.supportedNaturalLanguages.last?.lowercased() else {
             // use ja-knbc.json model as default.
             return jaModel
         }
 
-        if jaModel.supportedNaturalLanguages.contains(lang) {
+        if jaModel.supportedNaturalLanguages.map({ $0.lowercased() }).contains(lang) {
             return jaModel
         }
 
         let zhHansModel = ZhHansModel()
-        if zhHansModel.supportedNaturalLanguages.contains(lang) {
+        if zhHansModel.supportedNaturalLanguages.map({ $0.lowercased() }).contains(lang) {
             return zhHansModel
         }
 
         let zhHantModel = ZhHantModel()
-        if zhHantModel.supportedNaturalLanguages.contains(lang) {
+        if zhHantModel.supportedNaturalLanguages.map({ $0.lowercased() }).contains(lang) {
             return zhHantModel
         }
 
