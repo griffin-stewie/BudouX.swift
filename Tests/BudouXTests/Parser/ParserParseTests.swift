@@ -6,14 +6,14 @@ final class ParserParseTests: XCTestCase {
 
     struct ModelForTest: Model {
         let supportedNaturalLanguages: Set<String> = []
-        let featureAndScore: [String: Int]
+        let featureAndScore: [String: [String: Int]]
     }
 
     let testSentence = "abcdeabcd"
 
     func testShouldSeparateIfAStrongFeatureItemSupports() throws {
         let model = ModelForTest(featureAndScore: [
-            "UW4:a": 10000  // means "should separate right before 'a'".
+            "UW4": ["a": 10000]  // means "should separate right before 'a'".
         ])
         let parser = Parser(model: model)
         let result = parser.parse(sentence: testSentence)
@@ -22,7 +22,7 @@ final class ParserParseTests: XCTestCase {
 
     func testShouldSeparateEvenIfItMakesTheFirstCharacterASolePhrase() throws {
         let model = ModelForTest(featureAndScore: [
-            "UW4:b": 10000  // means "should separate right before 'b'".
+            "UW4": ["b": 10000]  // means "should separate right before 'b'".
         ])
         let parser = Parser(model: model)
         let result = parser.parse(sentence: testSentence)
@@ -58,19 +58,22 @@ final class ParserParseTests: XCTestCase {
             "あの",
             "イーハトーヴォの",
             "すきと",
-            "おった風、",
+            "おった",
+            "風、",
             "夏でも",
             "底に",
             "冷たさを",
-            "もつ青いそら、",
-            "うつくしい森で",
+            "もつ青い",
+            "そら、",
+            "うつくしい",
+            "森で",
             "飾られた",
             "モリーオ市、",
             "郊外の",
-            "ぎら",
-            "ぎら",
+            "ぎらぎら",
             "ひかる",
-            "草の波。",
+            "草の",
+            "波。",
         ]
         XCTAssertEqual(result, expected)
     }
@@ -81,10 +84,10 @@ final class ParserParseTests: XCTestCase {
         print(result)
         let expected = [
             "郊外の",
-            "ぎら",
-            "ぎら",
+            "ぎらぎら",
             "ひかる",
-            "草の波。",
+            "草の",
+            "波。",
         ]
         XCTAssertEqual(result, expected)
     }

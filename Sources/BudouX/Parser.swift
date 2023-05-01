@@ -27,55 +27,6 @@ public struct Parser {
         self.model = model
     }
 
-    /// Generates a feature from characters around (w1-w6).
-    /// - Parameters:
-    ///   - w1: The character 3 characters before the break point.
-    ///   - w2: The character 2 characters before the break point.
-    ///   - w3: he character right before the break point.
-    ///   - w4: The character right after the break point.
-    ///   - w5: The character 2 characters after the break point.
-    ///   - w6: The character 3 characters after the break point.
-    /// - Returns: A feature to be consumed by a classifier.
-    static func getFeature(
-        w1: String,
-        w2: String,
-        w3: String,
-        w4: String,
-        w5: String,
-        w6: String
-    ) -> [String] {
-        let rawFeature = [
-            "UW1": w1,
-            "UW2": w2,
-            "UW3": w3,
-            "UW4": w4,
-            "UW5": w5,
-            "UW6": w6,
-            "BW1": w2 + w3,
-            "BW2": w3 + w4,
-            "BW3": w4 + w5,
-            "TW1": w1 + w2 + w3,
-            "TW2": w2 + w3 + w4,
-            "TW3": w3 + w4 + w5,
-            "TW4": w4 + w5 + w6,
-        ]
-        return
-            rawFeature
-            .filter { (_, value) -> Bool in !value.contains(invalid) }
-            .map { (key, value) -> String in "\(key):\(value)" }
-    }
-
-    static func getFeature(
-        w1: Character,
-        w2: Character,
-        w3: Character,
-        w4: Character,
-        w5: Character,
-        w6: Character
-    ) -> [String] {
-        return getFeature(w1: String(w1), w2: String(w2), w3: String(w3), w4: String(w4), w5: String(w5), w6: String(w6))
-    }
-
     /// Parses the input sentence and returns a list of semantic chunks.
     /// - Parameters:
     ///   - sentence: sentence An input sentence.
@@ -86,23 +37,27 @@ public struct Parser {
         }
 
         var result = [String(sentence[sentence.startIndex])]
-        let baseScore = -(model.values.sum())
+        let baseScore: Double = {
+            Double(model.values.map(\.arrayOfValue).flatMap({ $0 }).sum()) * -0.5
+        }()
 
         for i in 1..<sentence.count {
-            let feature = Parser.getFeature(
-                w1: sentence.string(at: i - 3) ?? invalid,
-                w2: sentence.string(at: i - 2) ?? invalid,
-                w3: sentence.string(at: i - 1)!,
-                w4: sentence.string(at: i)!,
-                w5: sentence.string(at: i + 1) ?? invalid,
-                w6: sentence.string(at: i + 2) ?? invalid
-            )
 
-            let score =
-                baseScore + 2
-                * feature
-                .map { model.featureAndScore[$0] ?? 0 }
-                .sum()
+            var score = baseScore
+            score += model.score(for: "UW1", at: sentence.slice(i-3, i-2))
+            score += model.score(for: "UW2", at: sentence.slice(i-2, i-1))
+            score += model.score(for: "UW3", at: sentence.slice(i-1, i))
+            score += model.score(for: "UW4", at: sentence.slice(i, i+1))
+            score += model.score(for: "UW5", at: sentence.slice(i+1, i+2))
+            score += model.score(for: "UW6", at: sentence.slice(i+2, i+3))
+            score += model.score(for: "BW1", at: sentence.slice(i-2, i))
+            score += model.score(for: "BW2", at: sentence.slice(i-1, i+1))
+            score += model.score(for: "BW3", at: sentence.slice(i, i+2))
+            score += model.score(for: "TW1", at: sentence.slice(i-3, i))
+            score += model.score(for: "TW2", at: sentence.slice(i-2, i+1))
+            score += model.score(for: "TW3", at: sentence.slice(i-1, i+2))
+            score += model.score(for: "TW4", at: sentence.slice(i, i+3))
+
             if score > 0 {
                 result.append("")
             }
@@ -143,23 +98,30 @@ extension Parser {
 
 // MARK: - Internal
 
-extension String {
-    func string(at index: Int) -> String? {
-        guard index >= 0 else {
-            return nil
+extension Model {
+    var values: [[String: Int]] {
+        featureAndScore.arrayOfValue
+    }
+
+    func score(for rootKey: String, at key: String?) -> Double {
+        guard let dict: [String: Int] = featureAndScore[rootKey] else {
+            return 0
         }
-        guard index < count else {
-            return nil
+
+        guard let key else {
+            return 0
         }
-        guard let strIndex = self.index(startIndex, offsetBy: index, limitedBy: endIndex) else {
-            return nil
+
+        guard let value = dict[key] else {
+            return 0
         }
-        return String(self[strIndex])
+
+        return Double(value)
     }
 }
 
-extension Model {
-    var values: [Int] {
-        featureAndScore.values.map { $0 }
+extension Dictionary {
+    var arrayOfValue: [Dictionary.Value] {
+        values.map { $0 }
     }
 }
