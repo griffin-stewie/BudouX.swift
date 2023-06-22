@@ -38,7 +38,7 @@ print(parser.translate(sentence: sample))
 // あ⁠な⁠た⁠に​寄⁠り⁠添⁠う​最⁠先⁠端⁠の​テ⁠ク⁠ノ⁠ロ⁠ジ⁠ー⁠。
 ```
 
-Here's a convinience String extension method as well.
+Here's a convenience String extension method as well.
 
 ```swift
 import BudouX
