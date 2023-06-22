@@ -38,7 +38,7 @@ print(parser.translate(sentence: sample))
 // あ⁠な⁠た⁠に​寄⁠り⁠添⁠う​最⁠先⁠端⁠の​テ⁠ク⁠ノ⁠ロ⁠ジ⁠ー⁠。
 ```
 
-Here's a convinience String extension method as well.
+Here's a convenience String extension method as well.
 
 ```swift
 import BudouX
@@ -48,9 +48,27 @@ print(sample.budouxed())
 // あ⁠な⁠た⁠に​寄⁠り⁠添⁠う​最⁠先⁠端⁠の​テ⁠ク⁠ノ⁠ロ⁠ジ⁠ー⁠。
 ```
 
-If you need a function which translate an HTML string by wrapping phrases with non-breaking markup. Here's a support package for it.
+You can use an external model as follows.
 
-[griffin-stewie/HTMLBudouX.swift](https://github.com/griffin-stewie/HTMLBudouX.swift)
+```swift
+import BudouX
+
+// This case, directory download latest Japanese model from BudouX.
+let url = URL(string: "https://raw.githubusercontent.com/google/budoux/main/budoux/models/ja.json")!
+let (data, _) = try await URLSession.shared.data(from: url)
+
+// Initialize `CustomModel` class from data you download.
+let model = try CustomModel(modelJSON: data, supportedNaturalLanguages: ["ja"])
+
+// Use the `CustomModel`
+let parser = BudouX.Parser(model: model)
+print(parser.parse(sentence: "あなたに寄り添う最先端のテクノロジー。"))
+
+```
+
+~~If you need a function which translate an HTML string by wrapping phrases with non-breaking markup. Here's a support package for it.~~ Deprecated.
+
+~~[griffin-stewie/HTMLBudouX.swift](https://github.com/griffin-stewie/HTMLBudouX.swift)~~
 
 ### For `SwiftUI.Text`
 
@@ -84,7 +102,7 @@ Support Swift Package Manager only. There are no plans to support other package 
 
 ```swift
 package.append(
-    .package(url: "https://github.com/griffin-stewie/BudouX.swift", from: "0.7.0")
+    .package(url: "https://github.com/griffin-stewie/BudouX.swift", from: "0.9.0")
 )
 
 package.targets.append(
@@ -96,7 +114,7 @@ package.targets.append(
 
 ## Update Data from BudouX
 
-For this package maintainer, run following command to update `Sources/BudouX/Data/JaKNBCModel.swift` and `Sources/BudouX/Data/UnicodeBlocks.swift` from [original BudouX](https://github.com/google/budoux).
+For this package maintainer, run following command to update built-in models from [original BudouX](https://github.com/google/budoux).
 
 ```sh
 make generate_data 
