@@ -107,7 +107,7 @@ package.append(
 
 package.targets.append(
     .target(name: "Foo", dependencies: [
-        .productItem(name: "BudouX", package: "BudouX.swift")
+        .product(name: "BudouX", package: "BudouX.swift")
     ])
 )
 ```
