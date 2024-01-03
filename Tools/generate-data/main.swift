@@ -45,6 +45,7 @@ struct GenerateData: ParsableCommand {
 
     var zhHansJSONURL: URL { URL(string: "https://raw.githubusercontent.com/google/budoux/\(commit)/budoux/models/zh-hans.json")! }
     var zhHantJSONURL: URL { URL(string: "https://raw.githubusercontent.com/google/budoux/\(commit)/budoux/models/zh-hant.json")! }
+    var thJSONURL: URL { URL(string: "https://raw.githubusercontent.com/google/budoux/\(commit)/budoux/models/th.json")! }
 
     @Option(name: .shortAndLong, help: "The commit hash of model data.")
     var commit: String = "main"
@@ -100,6 +101,22 @@ struct GenerateData: ParsableCommand {
             """
     }
 
+    func generateThModelCode(data: Data) -> String {
+        let jsonStr = String(data: data, encoding: .utf8)!
+            .replacingOccurrences(of: "{", with: "[")
+            .replacingOccurrences(of: "}", with: "]")
+            .escapingUnicode()
+        return """
+            // swift-format-ignore-file
+            public struct ThModel: Model {
+                public init() {}
+                public let supportedNaturalLanguages: Set = ["th"]
+                /// Default built-in model mapping a feature (str) and its score (int).
+                public let featureAndScore: [String: [String: Int]] = \(jsonStr)
+            }
+            """
+    }
+
     mutating func run() throws {
         let jaKNBCJSONData = try Data(contentsOf: jaKNBCJSONURL)
         let jaKNBCSwiftPath = repositoryRootDirectory.appendingPathComponent("Sources/BudouX/Data/JaKNBCModel.swift")
@@ -115,6 +132,11 @@ struct GenerateData: ParsableCommand {
         let zhHantSwiftPath = repositoryRootDirectory.appendingPathComponent("Sources/BudouX/Data/ZhHantModel.swift")
         try generateZhHantModelCode(data: zhHantJSONData)
             .write(toFile: zhHantSwiftPath.path, atomically: true, encoding: .utf8)
+
+        let thJSONData = try Data(contentsOf: thJSONURL)
+        let thSwiftPath = repositoryRootDirectory.appendingPathComponent("Sources/BudouX/Data/ThModel.swift")
+        try generateThModelCode(data: thJSONData)
+            .write(toFile: thSwiftPath.path, atomically: true, encoding: .utf8)
     }
 }
 
