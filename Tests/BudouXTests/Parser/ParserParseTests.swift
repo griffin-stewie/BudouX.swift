@@ -78,7 +78,7 @@ final class ParserParseTests: XCTestCase {
         XCTAssertEqual(result, expected)
     }
 
-    func testSample22() throws {
+    func testSample3() throws {
         let parser = Parser()
         let result = parser.parse(sentence: "郊外のぎらぎらひかる草の波。")
         print(result)
@@ -88,6 +88,17 @@ final class ParserParseTests: XCTestCase {
             "ひかる",
             "草の",
             "波。",
+        ]
+        XCTAssertEqual(result, expected)
+    }
+
+    func testSample4() throws {
+        let parser = Parser()
+        let result = parser.parse(sentence: "今日は天気です。")
+        print(result)
+        let expected = [
+            "今日は",
+            "天気です。",
         ]
         XCTAssertEqual(result, expected)
     }
