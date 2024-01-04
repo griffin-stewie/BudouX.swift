@@ -137,6 +137,11 @@ extension MainCommand {
             return zhHantModel
         }
 
+        let thModel = ThModel()
+        if thModel.supportedNaturalLanguages.map({ $0.lowercased() }).contains(lang) {
+            return thModel
+        }
+
         // fallback to ja as default.
         return jaModel
     }
