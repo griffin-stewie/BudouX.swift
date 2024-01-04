@@ -158,4 +158,22 @@ final class ParserParseTests: XCTestCase {
         ]
         XCTAssertEqual(result, expected)
     }
+
+    func testLoadDefaultThaiParser() throws {
+        let parser = Parser(model: ThModel())
+        let result = parser.parse(sentence: "วันนี้อากาศดี")
+        print(result)
+        let expected = [
+            "วัน",
+            "นี้",
+            "อากาศ",
+            "ดี",
+        ]
+
+        XCTAssertEqual(result.count, expected.count)
+
+        for i in result.indices {
+            XCTAssertEqual(result[i], expected[i])
+        }
+    }
 }

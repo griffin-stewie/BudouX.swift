@@ -36,35 +36,44 @@ public struct Parser {
             return []
         }
 
-        var result = [String(sentence[sentence.startIndex])]
+        let boundaries = parseBoundaries(sentence: sentence)
+        var result: [String] = [];
+        var start: String.UnicodeScalarView.Index = sentence.unicodeScalars.startIndex;
+        for boundary in boundaries {
+            result.append(String(sentence.unicodeScalars[start..<boundary]))
+            start = boundary
+        }
+        result.append(String(sentence.unicodeScalars[start...]))
+        return result;
+    }
+
+    private func parseBoundaries(sentence: String) -> [String.UnicodeScalarView.Index] {
+        var result: [String.UnicodeScalarView.Index] = []
         let baseScore: Double = {
             Double(model.values.map(\.arrayOfValue).flatMap({ $0 }).sum()) * -0.5
         }()
 
-        for i in 1..<sentence.count {
-
+        for i in 1..<sentence.unicodeScalars.count {
             var score = baseScore
-            score += model.score(for: "UW1", at: sentence.slice(i-3, i-2))
-            score += model.score(for: "UW2", at: sentence.slice(i-2, i-1))
-            score += model.score(for: "UW3", at: sentence.slice(i-1, i))
-            score += model.score(for: "UW4", at: sentence.slice(i, i+1))
-            score += model.score(for: "UW5", at: sentence.slice(i+1, i+2))
-            score += model.score(for: "UW6", at: sentence.slice(i+2, i+3))
-            score += model.score(for: "BW1", at: sentence.slice(i-2, i))
-            score += model.score(for: "BW2", at: sentence.slice(i-1, i+1))
-            score += model.score(for: "BW3", at: sentence.slice(i, i+2))
-            score += model.score(for: "TW1", at: sentence.slice(i-3, i))
-            score += model.score(for: "TW2", at: sentence.slice(i-2, i+1))
-            score += model.score(for: "TW3", at: sentence.slice(i-1, i+2))
-            score += model.score(for: "TW4", at: sentence.slice(i, i+3))
+            score += model.score(for: "UW1", at: sentence.unicodeScalars.slice(i-3, i-2))
+            score += model.score(for: "UW2", at: sentence.unicodeScalars.slice(i-2, i-1))
+            score += model.score(for: "UW3", at: sentence.unicodeScalars.slice(i-1, i))
+            score += model.score(for: "UW4", at: sentence.unicodeScalars.slice(i, i+1))
+            score += model.score(for: "UW5", at: sentence.unicodeScalars.slice(i+1, i+2))
+            score += model.score(for: "UW6", at: sentence.unicodeScalars.slice(i+2, i+3))
+            score += model.score(for: "BW1", at: sentence.unicodeScalars.slice(i-2, i))
+            score += model.score(for: "BW2", at: sentence.unicodeScalars.slice(i-1, i+1))
+            score += model.score(for: "BW3", at: sentence.unicodeScalars.slice(i, i+2))
+            score += model.score(for: "TW1", at: sentence.unicodeScalars.slice(i-3, i))
+            score += model.score(for: "TW2", at: sentence.unicodeScalars.slice(i-2, i+1))
+            score += model.score(for: "TW3", at: sentence.unicodeScalars.slice(i-1, i+2))
+            score += model.score(for: "TW4", at: sentence.unicodeScalars.slice(i, i+3))
 
-            if score > 0 {
-                result.append("")
+            if score > 0, let index = sentence.unicodeScalars.index(of: i) {
+                result.append(index)
             }
-
-            result[result.count - 1] += sentence.string(at: i)!
         }
-
+        
         return result
     }
 }
